@@ -42,17 +42,35 @@ function updateDateTime() {
 let products = JSON.parse(localStorage.getItem('products')) || [];
 let cart = [];
 let currentReceipt = null;
+let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
+let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+let printerConnected = false;
+let scannerConnected = false;
 
 function saveProducts() {
     localStorage.setItem('products', JSON.stringify(products));
+}
+
+function saveCategories() {
+    localStorage.setItem('customCategories', JSON.stringify(customCategories));
+}
+
+function saveHistory() {
+    localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
 }
 
 function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
+function getAllCategories() {
+    const defaultCategories = ['خواردەمەنی', 'خواردنەوە', 'پاکیژەیی', 'کەلووپەل'];
+    return [...defaultCategories, ...customCategories];
+}
+
 function renderCategories() {
-    const categories = ['هەموو', ...new Set(products.map(p => p.category))];
+    const productCategories = new Set(products.map(p => p.category));
+    const categories = ['هەموو', ...productCategories];
     const filterDiv = document.querySelector('.category-filter');
     filterDiv.innerHTML = categories.map(cat => 
         `<button class="category-btn ${cat === 'هەموو' ? 'active' : ''}" data-category="${cat}">${cat}</button>`
@@ -94,6 +112,14 @@ function renderProducts(category = 'هەموو') {
                 <div class="product-badges">
                     <span class="badge ${badgeClass}">${stockText}</span>
                     <span class="badge badge-outline">${product.category}</span>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-edit" onclick="openEditProduct('${product.id}')" title="دەستکاری">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </button>
+                    <button class="btn-delete" onclick="deleteProduct('${product.id}')" title="سڕینەوە">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    </button>
                 </div>
             </div>
         `;
@@ -211,6 +237,11 @@ function clearCart() {
 }
 
 function openProductDialog() {
+    const categorySelect = document.getElementById('productCategory');
+    categorySelect.innerHTML = getAllCategories().map(cat => 
+        `<option value="${cat}">${cat}</option>`
+    ).join('');
+    
     document.getElementById('productDialog').style.display = 'flex';
     document.getElementById('productForm').reset();
     document.getElementById('productDialogTitle').textContent = 'زیادکردنی بەرهەمی نوێ';
@@ -263,6 +294,15 @@ function confirmCheckout() {
         paymentMethod: paymentMethod,
         date: now
     };
+    
+    salesHistory.push({
+        receiptNumber: currentReceipt.receiptNumber,
+        items: currentReceipt.items,
+        total: currentReceipt.total,
+        paymentMethod: currentReceipt.paymentMethod,
+        date: currentReceipt.date.toISOString()
+    });
+    saveHistory();
     
     cart.forEach(cartItem => {
         const product = products.find(p => p.id === cartItem.productId);
@@ -498,6 +538,214 @@ function showToast(title, message, type) {
     }, 3000);
 }
 
+function openSettingsDialog() {
+    checkDevices();
+    renderCategoriesList();
+    document.getElementById('settingsDialog').style.display = 'flex';
+}
+
+function closeSettingsDialog() {
+    document.getElementById('settingsDialog').style.display = 'none';
+}
+
+function checkDevices() {
+    setTimeout(() => {
+        if (navigator.usb) {
+            navigator.usb.getDevices().then(devices => {
+                printerConnected = devices.some(device => device.productName && device.productName.toLowerCase().includes('printer'));
+                scannerConnected = devices.some(device => device.productName && device.productName.toLowerCase().includes('scanner'));
+                updateDeviceStatus();
+            }).catch(() => {
+                updateDeviceStatus();
+            });
+        } else {
+            updateDeviceStatus();
+        }
+    }, 100);
+}
+
+function updateDeviceStatus() {
+    const printerStatus = document.getElementById('printerStatus');
+    const scannerStatus = document.getElementById('scannerStatus');
+    
+    if (printerConnected) {
+        printerStatus.textContent = 'بەستراوە';
+        printerStatus.className = 'status-badge status-connected';
+    } else {
+        printerStatus.textContent = 'بەستراو نییە';
+        printerStatus.className = 'status-badge status-disconnected';
+    }
+    
+    if (scannerConnected) {
+        scannerStatus.textContent = 'بەستراوە';
+        scannerStatus.className = 'status-badge status-connected';
+    } else {
+        scannerStatus.textContent = 'بەستراو نییە';
+        scannerStatus.className = 'status-badge status-disconnected';
+    }
+}
+
+function renderCategoriesList() {
+    const list = document.getElementById('categoriesList');
+    const allCategories = getAllCategories();
+    list.innerHTML = allCategories.map(cat => `
+        <div class="category-item">
+            <span class="category-name">${cat}</span>
+            ${customCategories.includes(cat) ? `
+                <button class="btn-delete-category" onclick="deleteCategory('${cat}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+function openCategoryDialog() {
+    document.getElementById('categoryDialog').style.display = 'flex';
+    document.getElementById('categoryForm').reset();
+}
+
+function closeCategoryDialog() {
+    document.getElementById('categoryDialog').style.display = 'none';
+}
+
+function saveCategory(e) {
+    e.preventDefault();
+    const categoryName = document.getElementById('categoryName').value.trim();
+    
+    if (getAllCategories().includes(categoryName)) {
+        showToast('هەڵە', 'ئەم جۆرە پێشتر هەیە', 'error');
+        return;
+    }
+    
+    customCategories.push(categoryName);
+    saveCategories();
+    closeCategoryDialog();
+    renderCategoriesList();
+    showToast('سەرکەوتوو', 'جۆر زیادکرا', 'success');
+}
+
+function deleteCategory(categoryName) {
+    if (products.some(p => p.category === categoryName)) {
+        showToast('هەڵە', 'ئەم جۆرە لە بەرهەمێکدا بەکاردێت', 'error');
+        return;
+    }
+    
+    customCategories = customCategories.filter(cat => cat !== categoryName);
+    saveCategories();
+    renderCategoriesList();
+    showToast('سەرکەوتوو', 'جۆر سڕایەوە', 'success');
+}
+
+function openEditProduct(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    document.getElementById('editProductId').value = product.id;
+    document.getElementById('editProductName').value = product.name;
+    document.getElementById('editProductPrice').value = product.price;
+    document.getElementById('editProductQuantity').value = product.quantity;
+    
+    const categorySelect = document.getElementById('editProductCategory');
+    categorySelect.innerHTML = getAllCategories().map(cat => 
+        `<option value="${cat}" ${cat === product.category ? 'selected' : ''}>${cat}</option>`
+    ).join('');
+    
+    document.getElementById('editProductDialog').style.display = 'flex';
+}
+
+function closeEditProductDialog() {
+    document.getElementById('editProductDialog').style.display = 'none';
+}
+
+function saveEditProduct(e) {
+    e.preventDefault();
+    
+    const productId = document.getElementById('editProductId').value;
+    const product = products.find(p => p.id === productId);
+    
+    if (!product) return;
+    
+    product.name = document.getElementById('editProductName').value;
+    product.price = parseFloat(document.getElementById('editProductPrice').value);
+    product.quantity = parseInt(document.getElementById('editProductQuantity').value);
+    product.category = document.getElementById('editProductCategory').value;
+    
+    saveProducts();
+    closeEditProductDialog();
+    renderCategories();
+    renderProducts();
+    showToast('سەرکەوتوو', 'بەرهەم نوێکرایەوە', 'success');
+}
+
+function deleteProduct(productId) {
+    if (!confirm('دڵنیایت لە سڕینەوەی ئەم بەرهەمە؟')) return;
+    
+    products = products.filter(p => p.id !== productId);
+    saveProducts();
+    renderCategories();
+    renderProducts();
+    showToast('سەرکەوتوو', 'بەرهەم سڕایەوە', 'success');
+}
+
+function openHistoryDialog() {
+    renderHistory();
+    document.getElementById('historyDialog').style.display = 'flex';
+}
+
+function closeHistoryDialog() {
+    document.getElementById('historyDialog').style.display = 'none';
+}
+
+function renderHistory() {
+    const historyContent = document.getElementById('historyContent');
+    
+    if (salesHistory.length === 0) {
+        historyContent.innerHTML = `
+            <div class="cart-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.2;"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+                <p class="cart-empty-text">مێژوو بەتاڵە</p>
+            </div>
+        `;
+        return;
+    }
+    
+    historyContent.innerHTML = salesHistory.slice().reverse().map(receipt => `
+        <div class="history-item" onclick="viewHistoryReceipt('${receipt.receiptNumber}')">
+            <div class="history-header">
+                <span class="history-receipt-number">#${toKurdishNumerals(receipt.receiptNumber)}</span>
+                <span class="history-date">${formatKurdishDate(new Date(receipt.date))}</span>
+            </div>
+            <div class="history-summary">
+                <span>${toKurdishNumerals(receipt.items.length)} بەرهەم</span>
+                <span class="history-total">${formatKurdishCurrency(receipt.total)}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function viewHistoryReceipt(receiptNumber) {
+    const receipt = salesHistory.find(r => r.receiptNumber === receiptNumber);
+    if (!receipt) return;
+    
+    currentReceipt = {
+        ...receipt,
+        date: new Date(receipt.date)
+    };
+    
+    closeHistoryDialog();
+    openReceiptDialog();
+}
+
+function clearHistory() {
+    if (!confirm('دڵنیایت لە سڕینەوەی هەموو مێژووەکە؟')) return;
+    
+    salesHistory = [];
+    saveHistory();
+    renderHistory();
+    showToast('سەرکەوتوو', 'مێژوو سڕایەوە', 'success');
+}
+
 document.getElementById('btnAddProduct').addEventListener('click', openProductDialog);
 document.getElementById('btnCancelProduct').addEventListener('click', closeProductDialog);
 document.getElementById('productForm').addEventListener('submit', saveProduct);
@@ -512,17 +760,20 @@ document.getElementById('btnDownloadReceipt').addEventListener('click', download
 
 document.getElementById('btnClearCart').addEventListener('click', clearCart);
 document.getElementById('btnNewSale').addEventListener('click', newSale);
-document.getElementById('btnViewReceipts').addEventListener('click', () => {
-    if (currentReceipt) {
-        openReceiptDialog();
-    } else {
-        showToast('', 'هیچ وەسڵێک نییە', 'error');
-    }
-});
 
-document.getElementById('btnSettings').addEventListener('click', () => {
-    showToast('ڕێکخستنەکان', 'بەزووانە لە داهاتوودا', 'success');
-});
+document.getElementById('btnSettings').addEventListener('click', openSettingsDialog);
+document.getElementById('btnCloseSettings').addEventListener('click', closeSettingsDialog);
+
+document.getElementById('btnAddCategory').addEventListener('click', openCategoryDialog);
+document.getElementById('btnCancelCategory').addEventListener('click', closeCategoryDialog);
+document.getElementById('categoryForm').addEventListener('submit', saveCategory);
+
+document.getElementById('btnCancelEditProduct').addEventListener('click', closeEditProductDialog);
+document.getElementById('editProductForm').addEventListener('submit', saveEditProduct);
+
+document.getElementById('btnHistory').addEventListener('click', openHistoryDialog);
+document.getElementById('btnCloseHistory').addEventListener('click', closeHistoryDialog);
+document.getElementById('btnClearHistory').addEventListener('click', clearHistory);
 
 document.querySelectorAll('.dialog-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {

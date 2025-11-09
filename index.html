@@ -17,8 +17,8 @@
                 <button class="icon-btn" id="btnNewSale" title="فرۆشتنی نوێ" data-testid="button-new-sale">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                 </button>
-                <button class="icon-btn" id="btnViewReceipts" title="بینینی وەسڵەکان" data-testid="button-view-receipt">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+                <button class="icon-btn" id="btnHistory" title="مێژووی فرۆشتن" data-testid="button-history">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
                 </button>
                 <button class="icon-btn" id="btnSettings" title="ڕێکخستنەکان" data-testid="button-settings">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -170,6 +170,115 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                     داگرتن PDF
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3 class="dialog-title">ڕێکخستنەکان</h3>
+            </div>
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h4 class="settings-section-title">ئامێرەکان</h4>
+                    <div class="device-status">
+                        <div class="device-item">
+                            <div class="device-info">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+                                <span>چاپکەر</span>
+                            </div>
+                            <span class="status-badge status-disconnected" id="printerStatus">بەستراو نییە</span>
+                        </div>
+                        <div class="device-item">
+                            <div class="device-info">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2"/><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"/><path d="M13 5v2"/><path d="M7 12h10"/><path d="M7 16h10"/></svg>
+                                <span>سکانەر</span>
+                            </div>
+                            <span class="status-badge status-disconnected" id="scannerStatus">بەستراو نییە</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4 class="settings-section-title">جۆرەکان</h4>
+                    <div class="categories-list" id="categoriesList">
+                    </div>
+                    <button class="btn-add-category" id="btnAddCategory">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        زیادکردنی جۆری نوێ
+                    </button>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCloseSettings">داخستن</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="categoryDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content dialog-small">
+            <div class="dialog-header">
+                <h3 class="dialog-title">زیادکردنی جۆری نوێ</h3>
+            </div>
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryName">ناوی جۆر</label>
+                    <input type="text" id="categoryName" placeholder="ناوی جۆر بنووسە" required>
+                </div>
+                <div class="dialog-footer">
+                    <button type="button" class="btn-outline" id="btnCancelCategory">پاشگەزبوونەوە</button>
+                    <button type="submit" class="btn-primary">زیادکردن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editProductDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3 class="dialog-title">دەستکاریکردنی بەرهەم</h3>
+            </div>
+            <form id="editProductForm">
+                <input type="hidden" id="editProductId">
+                <div class="form-group">
+                    <label for="editProductName">ناوی بەرهەم</label>
+                    <input type="text" id="editProductName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductPrice">نرخ (دینار)</label>
+                    <input type="number" id="editProductPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductQuantity">دانە</label>
+                    <input type="number" id="editProductQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductCategory">جۆر</label>
+                    <select id="editProductCategory">
+                    </select>
+                </div>
+                <div class="dialog-footer">
+                    <button type="button" class="btn-outline" id="btnCancelEditProduct">پاشگەزبوونەوە</button>
+                    <button type="submit" class="btn-primary">پاشەکەوتکردن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="historyDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content dialog-large">
+            <div class="dialog-header">
+                <h3 class="dialog-title">مێژووی فرۆشتن</h3>
+            </div>
+            <div class="history-content" id="historyContent">
+                <div class="cart-empty">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.2;"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+                    <p class="cart-empty-text">مێژوو بەتاڵە</p>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCloseHistory">داخستن</button>
+                <button type="button" class="btn-outline" id="btnClearHistory">سڕینەوەی مێژوو</button>
             </div>
         </div>
     </div>
