@@ -1,0 +1,3024 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="سیستەمی کاشێری کوردی - بەڕێوەبردنی فرۆشتن و وەسڵ">
+    <title>سیستەمی کاشێری کوردی</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans Arabic', Arial, sans-serif;
+    background: #f5f5f5;
+    color: #1a1a1a;
+    direction: rtl;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.top-bar {
+    height: 64px;
+    background: white;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.top-bar-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.store-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.date-time {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.separator {
+    color: #999;
+}
+
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background: #f5f5f5;
+    color: #1a1a1a;
+}
+
+.icon-btn:active {
+    background: #e5e5e5;
+    transform: scale(0.95);
+}
+
+.icon-btn.highlighted {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    color: white;
+}
+
+.icon-btn.highlighted:hover {
+    background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.products-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fafafa;
+}
+
+.category-filter {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.category-btn {
+    padding: 0.5rem 1.25rem;
+    border: 1px solid #e5e5e5;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.2s;
+    color: #333;
+}
+
+.category-btn:hover {
+    background: #f5f5f5;
+}
+
+.category-btn.active {
+    background: #16a34a;
+    color: white;
+    border-color: #16a34a;
+}
+
+.products-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    align-content: start;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: #999;
+    font-size: 1.125rem;
+}
+
+.product-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 180px;
+}
+
+.product-card:hover {
+    background: #fafafa;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.product-card:active {
+    background: #f5f5f5;
+    transform: translateY(0);
+}
+
+.product-card.out-of-stock {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.product-card.out-of-stock:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.product-icon {
+    width: 64px;
+    height: 64px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+
+.product-info {
+    text-align: center;
+    flex: 1;
+    width: 100%;
+}
+
+.product-name {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-bottom: 0.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.product-badges {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid;
+    white-space: nowrap;
+}
+
+.badge-outline {
+    background: white;
+    border-color: #e5e5e5;
+    color: #666;
+}
+
+.badge-secondary {
+    background: #fef3c7;
+    border-color: #fde047;
+    color: #854d0e;
+}
+
+.badge-destructive {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
+.btn-add-product {
+    margin: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-add-product:hover {
+    background: #15803d;
+}
+
+.btn-add-product:active {
+    transform: scale(0.98);
+}
+
+.cart-section {
+    width: 380px;
+    background: white;
+    border-left: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.cart-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cart-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    color: #666;
+}
+
+.btn-ghost:hover {
+    background: #f5f5f5;
+    color: #1a1a1a;
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.cart-items {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.cart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 2rem;
+    text-align: center;
+    color: #999;
+}
+
+.cart-empty-text {
+    font-size: 1.125rem;
+    margin-top: 1rem;
+}
+
+.cart-empty-hint {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.cart-item {
+    padding: 1rem;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.cart-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.75rem;
+}
+
+.cart-item-name {
+    font-weight: 600;
+    font-size: 1rem;
+    flex: 1;
+}
+
+.btn-remove {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #ef4444;
+    padding: 0.25rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-remove:hover {
+    background: #fee2e2;
+}
+
+.cart-item-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-item-price {
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quantity-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #e5e5e5;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: #666;
+}
+
+.quantity-btn:hover {
+    background: #f5f5f5;
+    color: #1a1a1a;
+}
+
+.quantity-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.quantity-value {
+    min-width: 30px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.cart-item-total {
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.cart-footer {
+    padding: 1rem;
+    border-top: 1px solid #e5e5e5;
+    background: #fafafa;
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.total-label {
+    font-weight: 500;
+}
+
+.total-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.btn-checkout {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-checkout:hover:not(:disabled) {
+    background: #15803d;
+}
+
+.btn-checkout:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.btn-checkout:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.dialog-content {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s;
+}
+
+.dialog-large {
+    max-width: 700px;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.dialog-header {
+    margin-bottom: 1.5rem;
+}
+
+.dialog-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.input-with-button {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.input-with-button input {
+    flex: 1;
+}
+
+.btn-scan-inline {
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-scan-inline:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.btn-scan-inline:active {
+    transform: translateY(0);
+}
+
+.dialog-footer {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn-outline {
+    padding: 0.625rem 1.25rem;
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+}
+
+.btn-outline:hover {
+    background: #f5f5f5;
+}
+
+.btn-primary {
+    padding: 0.625rem 1.25rem;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    background: #15803d;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.checkout-content {
+    padding: 1.5rem 0;
+}
+
+.checkout-total-box {
+    background: rgba(22, 163, 74, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.checkout-total-label {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.checkout-total-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.payment-methods {
+    margin-top: 1.5rem;
+}
+
+.payment-label {
+    display: block;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.payment-option {
+    margin-bottom: 0.75rem;
+}
+
+.payment-option input[type="radio"] {
+    display: none;
+}
+
+.payment-option-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.payment-option-label::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e5e5e5;
+    border-radius: 50%;
+    margin-left: auto;
+    transition: all 0.2s;
+}
+
+.payment-option input[type="radio"]:checked + .payment-option-label {
+    border-color: #16a34a;
+    background: rgba(22, 163, 74, 0.05);
+}
+
+.payment-option input[type="radio"]:checked + .payment-option-label::before {
+    border-color: #16a34a;
+    background: #16a34a;
+    box-shadow: inset 0 0 0 4px white;
+}
+
+.payment-option-label:hover {
+    background: #fafafa;
+}
+
+.payment-option span {
+    font-size: 1.125rem;
+}
+
+.receipt-content {
+    background: white;
+    padding: 2rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+}
+
+.receipt-header {
+    text-align: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e5e5e5;
+    margin-bottom: 1.5rem;
+}
+
+.receipt-store-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #16a34a;
+    margin-bottom: 0.5rem;
+}
+
+.receipt-subtitle {
+    font-size: 1.125rem;
+    color: #666;
+}
+
+.receipt-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.receipt-info-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.receipt-info-label {
+    color: #666;
+}
+
+.receipt-items-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.receipt-items {
+    margin-bottom: 1.5rem;
+}
+
+.receipt-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 0.875rem;
+}
+
+.receipt-item:last-child {
+    border-bottom: none;
+}
+
+.receipt-item-name {
+    font-weight: 600;
+}
+
+.receipt-item-qty,
+.receipt-item-price,
+.receipt-item-total {
+    text-align: left;
+}
+
+.receipt-total-section {
+    border-top: 2px solid #e5e5e5;
+    padding-top: 1rem;
+}
+
+.receipt-total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+}
+
+.receipt-total-row.grand-total {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #16a34a;
+    padding-top: 0.75rem;
+    border-top: 2px solid #e5e5e5;
+}
+
+.receipt-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e5e5e5;
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.settings-content {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.device-status {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.device-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #fafafa;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+}
+
+.device-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 0.375rem 0.875rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-connected {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-disconnected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.categories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #fafafa;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+.category-name {
+    font-weight: 500;
+}
+
+.btn-delete-category {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #ef4444;
+    padding: 0.25rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-delete-category:hover {
+    background: #fee2e2;
+}
+
+.btn-add-category {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 1px dashed #16a34a;
+    color: #16a34a;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-add-category:hover {
+    background: rgba(22, 163, 74, 0.05);
+}
+
+.dialog-small {
+    max-width: 400px;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.btn-edit,
+.btn-delete {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.btn-edit:hover {
+    background: #bae6fd;
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-delete:hover {
+    background: #fecaca;
+}
+
+.history-content {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 1rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.history-item:hover {
+    background: #fafafa;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.history-receipt-number {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #16a34a;
+}
+
+.history-date {
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.history-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.history-total {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #16a34a;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+    
+    .cart-section {
+        width: 100%;
+        max-height: 40vh;
+        border-left: none;
+        border-top: 1px solid #e5e5e5;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    .receipt-content,
+    .receipt-content * {
+        visibility: visible;
+    }
+    
+    .receipt-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    
+    .fixed-action-buttons {
+        display: none;
+    }
+}
+
+.fixed-action-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+}
+
+.fab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.fab:active {
+    transform: translateY(0);
+}
+
+.fab svg {
+    flex-shrink: 0;
+}
+
+.fab-new-sale {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.fab-new-sale:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.fab-add-product {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
+
+.fab-add-product:hover {
+    background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+}
+
+.fab-checkout {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.fab-checkout:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+.fab-scan {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.fab-scan:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+.scan-content {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.camera-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 1.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+}
+
+#scannerVideo {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.scanner-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.scanner-frame::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #16a34a;
+    box-shadow: 0 0 10px #16a34a;
+    transform: translateY(-50%);
+    animation: scannerLine 2s ease-in-out infinite;
+}
+
+@keyframes scannerLine {
+    0%, 100% {
+        top: 30%;
+    }
+    50% {
+        top: 70%;
+    }
+}
+
+.scanner-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 3px solid #16a34a;
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.3);
+}
+
+.scan-icon {
+    margin-bottom: 1.5rem;
+    color: #8b5cf6;
+    display: flex;
+    justify-content: center;
+}
+
+.scan-instruction {
+    font-size: 1.125rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.scan-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.barcode-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #8b5cf6;
+    border-radius: 8px;
+    font-size: 1.25rem;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+}
+
+.barcode-input:focus {
+    outline: none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+.scan-result {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.scan-result.success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.scan-result.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.reports-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.report-tab {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.report-tab:hover {
+    color: #1a1a1a;
+    background: #f5f5f5;
+}
+
+.report-tab.active {
+    color: #16a34a;
+    border-bottom-color: #16a34a;
+}
+
+.report-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(22, 163, 74, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #16a34a;
+    flex-shrink: 0;
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+@media (max-width: 768px) {
+    .fixed-action-buttons {
+        bottom: 10px;
+        gap: 8px;
+        padding: 6px 12px;
+    }
+    
+    .fab {
+        padding: 10px 16px;
+        font-size: 0.875rem;
+    }
+    
+    .fab span {
+        display: none;
+    }
+    
+    .fab {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="icon-btn highlighted" id="btnReports" title="ڕاپۆرتی فرۆشتن" data-testid="button-reports">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+                </button>
+                <button class="icon-btn" id="btnNewSale" title="فرۆشتنی نوێ" data-testid="button-new-sale">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                </button>
+                <button class="icon-btn" id="btnHistory" title="مێژووی فرۆشتن" data-testid="button-history">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+                </button>
+                <button class="icon-btn" id="btnSettings" title="ڕێکخستنەکان" data-testid="button-settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+                <button class="icon-btn" id="btnToggleFabs" title="شاردنەوە/پیشاندانی دوگمەکان" data-testid="button-toggle-fabs">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+            </div>
+            <div class="top-bar-right">
+                <h1 class="store-name" data-testid="text-store-name">فرۆشگای کوردستان</h1>
+                <div class="date-time">
+                    <span id="currentTime" data-testid="text-time">١٢:٠٠</span>
+                    <span class="separator">•</span>
+                    <span id="currentDate" data-testid="text-date">١ کانوونی دووەم ٢٠٢٥</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="products-section">
+                <div class="category-filter">
+                    <button class="category-btn active" data-category="هەموو">هەموو</button>
+                </div>
+                
+                <div id="productsGrid" class="products-grid">
+                    <div class="empty-state">
+                        <p>هیچ بەرهەمێک نەدۆزرایەوە</p>
+                    </div>
+                </div>
+
+                <button class="btn-add-product" id="btnAddProduct" data-testid="button-add-product">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    زیادکردنی بەرهەمی نوێ
+                </button>
+            </div>
+
+            <aside class="cart-section">
+                <div class="cart-header">
+                    <h2 class="cart-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                        سەبەتە
+                    </h2>
+                    <button class="btn-ghost btn-sm" id="btnClearCart" style="display: none;" data-testid="button-clear-cart">سڕینەوە</button>
+                </div>
+                
+                <div class="cart-items" id="cartItems">
+                    <div class="cart-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.2;"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                        <p class="cart-empty-text">سەبەتە بەتاڵە</p>
+                        <p class="cart-empty-hint">بەرهەمێک هەڵبژێرە</p>
+                    </div>
+                </div>
+
+                <div class="cart-footer">
+                    <div class="cart-total">
+                        <span class="total-label">کۆی گشتی:</span>
+                        <span class="total-amount" id="cartTotal" data-testid="text-cart-total">٠ د.ع</span>
+                    </div>
+                    <button class="btn-checkout" id="btnCheckout" disabled data-testid="button-checkout">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        تەواوکردنی فرۆشتن
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="productDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3 class="dialog-title" id="productDialogTitle">زیادکردنی بەرهەمی نوێ</h3>
+            </div>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="productName">ناوی بەرهەم</label>
+                    <input type="text" id="productName" placeholder="ناوی بەرهەم بنووسە" required data-testid="input-product-name">
+                </div>
+                <div class="form-group">
+                    <label for="productBarcode">بارکۆد (دڵخواز)</label>
+                    <div class="input-with-button">
+                        <input type="text" id="productBarcode" placeholder="بارکۆد بنووسە" data-testid="input-product-barcode">
+                        <button type="button" class="btn-scan-inline" id="btnScanProductBarcode" title="سکان کردنی بارکۆد">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                                <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                                <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                                <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                                <path d="M7 12h10"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">نرخ (دینار)</label>
+                    <input type="number" id="productPrice" step="0.01" placeholder="٠" required data-testid="input-product-price">
+                </div>
+                <div class="form-group">
+                    <label for="productQuantity">دانە</label>
+                    <input type="number" id="productQuantity" placeholder="٠" required data-testid="input-product-quantity">
+                </div>
+                <div class="form-group">
+                    <label for="productCategory">جۆر</label>
+                    <select id="productCategory" data-testid="select-product-category">
+                        <option value="خواردەمەنی">خواردەمەنی</option>
+                        <option value="خواردنەوە">خواردنەوە</option>
+                        <option value="پاکیژەیی">پاکیژەیی</option>
+                        <option value="کەلووپەل">کەلووپەل</option>
+                    </select>
+                </div>
+                <div class="dialog-footer">
+                    <button type="button" class="btn-outline" id="btnCancelProduct">پاشگەزبوونەوە</button>
+                    <button type="submit" class="btn-primary" data-testid="button-save-product">پاشەکەوتکردن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="checkoutDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3 class="dialog-title">تەواوکردنی فرۆشتن</h3>
+            </div>
+            <div class="checkout-content">
+                <div class="checkout-total-box">
+                    <p class="checkout-total-label">کۆی گشتی</p>
+                    <p class="checkout-total-amount" id="checkoutTotal" data-testid="text-checkout-total">٠ د.ع</p>
+                </div>
+                <div class="payment-methods">
+                    <label class="payment-label">شێوازی پارەدان</label>
+                    <div class="payment-option">
+                        <input type="radio" name="paymentMethod" value="نەقد" id="paymentCash" checked data-testid="radio-cash">
+                        <label for="paymentCash" class="payment-option-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+                            <span>نەقد</span>
+                        </label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="paymentMethod" value="کارت" id="paymentCard" data-testid="radio-card">
+                        <label for="paymentCard" class="payment-option-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M2 10h20"/></svg>
+                            <span>کارت</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCancelCheckout">پاشگەزبوونەوە</button>
+                <button type="button" class="btn-primary" id="btnConfirmCheckout" data-testid="button-confirm-checkout">پشتڕاستکردنەوە</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="receiptDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content dialog-large">
+            <div class="dialog-header">
+                <h3 class="dialog-title">وەسڵی فرۆشتن</h3>
+            </div>
+            <div class="receipt-content" id="receiptContent">
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCloseReceipt">داخستن</button>
+                <button type="button" class="btn-outline" id="btnPrintReceipt" data-testid="button-print-receipt">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+                    چاپکردن
+                </button>
+                <button type="button" class="btn-primary" id="btnDownloadReceipt" data-testid="button-download-receipt">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    داگرتن PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3 class="dialog-title">ڕێکخستنەکان</h3>
+            </div>
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h4 class="settings-section-title">ئامێرەکان</h4>
+                    <div class="device-status">
+                        <div class="device-item">
+                            <div class="device-info">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+                                <span>چاپکەر</span>
+                            </div>
+                            <span class="status-badge status-disconnected" id="printerStatus">بەستراو نییە</span>
+                        </div>
+                        <div class="device-item">
+                            <div class="device-info">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2"/><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"/><path d="M13 5v2"/><path d="M7 12h10"/><path d="M7 16h10"/></svg>
+                                <span>سکانەر</span>
+                            </div>
+                            <span class="status-badge status-disconnected" id="scannerStatus">بەستراو نییە</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4 class="settings-section-title">جۆرەکان</h4>
+                    <div class="categories-list" id="categoriesList">
+                    </div>
+                    <button class="btn-add-category" id="btnAddCategory">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                        زیادکردنی جۆری نوێ
+                    </button>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCloseSettings">داخستن</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="categoryDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content dialog-small">
+            <div class="dialog-header">
+                <h3 class="dialog-title">زیادکردنی جۆری نوێ</h3>
+            </div>
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryName">ناوی جۆر</label>
+                    <input type="text" id="categoryName" placeholder="ناوی جۆر بنووسە" required>
+                </div>
+                <div class="dialog-footer">
+                    <button type="button" class="btn-outline" id="btnCancelCategory">پاشگەزبوونەوە</button>
+                    <button type="submit" class="btn-primary">زیادکردن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editProductDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3 class="dialog-title">دەستکاریکردنی بەرهەم</h3>
+            </div>
+            <form id="editProductForm">
+                <input type="hidden" id="editProductId">
+                <div class="form-group">
+                    <label for="editProductName">ناوی بەرهەم</label>
+                    <input type="text" id="editProductName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductBarcode">بارکۆد (دڵخواز)</label>
+                    <div class="input-with-button">
+                        <input type="text" id="editProductBarcode" placeholder="بارکۆد بنووسە">
+                        <button type="button" class="btn-scan-inline" id="btnScanEditProductBarcode" title="سکان کردنی بارکۆد">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                                <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                                <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                                <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                                <path d="M7 12h10"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editProductPrice">نرخ (دینار)</label>
+                    <input type="number" id="editProductPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductQuantity">دانە</label>
+                    <input type="number" id="editProductQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductCategory">جۆر</label>
+                    <select id="editProductCategory">
+                    </select>
+                </div>
+                <div class="dialog-footer">
+                    <button type="button" class="btn-outline" id="btnCancelEditProduct">پاشگەزبوونەوە</button>
+                    <button type="submit" class="btn-primary">پاشەکەوتکردن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="historyDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content dialog-large">
+            <div class="dialog-header">
+                <h3 class="dialog-title">مێژووی فرۆشتن</h3>
+            </div>
+            <div class="history-content" id="historyContent">
+                <div class="cart-empty">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.2;"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+                    <p class="cart-empty-text">مێژوو بەتاڵە</p>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCloseHistory">داخستن</button>
+                <button type="button" class="btn-outline" id="btnClearHistory">سڕینەوەی مێژوو</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scanDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3 class="dialog-title">سکان کردنی بەرهەم</h3>
+            </div>
+            <div class="scan-content">
+                <div class="camera-container" id="cameraContainer" style="display: none;">
+                    <video id="scannerVideo" playsinline autoplay></video>
+                    <div class="scanner-frame">
+                        <div class="scanner-line"></div>
+                    </div>
+                </div>
+                <div class="scan-icon" id="scanIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                        <path d="M7 12h10"/>
+                    </svg>
+                </div>
+                <p class="scan-instruction" id="scanInstruction">بارکۆدەکە سکان بکە یان بنووسە</p>
+                <div class="scan-actions">
+                    <button type="button" class="btn-primary" id="btnStartCamera">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m23 7-7 5 7 5V7z"/><rect width="15" height="14" x="1" y="5" rx="2" ry="2"/></svg>
+                        کردنەوەی کامێرا
+                    </button>
+                    <button type="button" class="btn-outline" id="btnStopCamera" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/></svg>
+                        وەستاندنی کامێرا
+                    </button>
+                </div>
+                <form id="scanForm">
+                    <div class="form-group">
+                        <input type="text" id="barcodeInput" class="barcode-input" placeholder="بارکۆد بنووسە یان سکان بکە" autofocus data-testid="input-barcode">
+                    </div>
+                    <div class="scan-result" id="scanResult" style="display: none;"></div>
+                </form>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCloseScan">داخستن</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportsDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content dialog-large">
+            <div class="dialog-header">
+                <h3 class="dialog-title">ڕاپۆرتی فرۆشتن</h3>
+            </div>
+            <div class="reports-tabs">
+                <button class="report-tab active" data-period="daily">ڕۆژانە</button>
+                <button class="report-tab" data-period="weekly">هەفتانە</button>
+                <button class="report-tab" data-period="monthly">مانگانە</button>
+                <button class="report-tab" data-period="yearly">ساڵانە</button>
+            </div>
+            <div class="reports-content" id="reportsContent">
+                <div class="report-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">کۆی فرۆشتن</p>
+                            <p class="stat-value" id="reportTotalSales">٠ د.ع</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">ژمارەی مامەڵەکان</p>
+                            <p class="stat-value" id="reportTransactions">٠</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">کۆی بەرهەمەکان</p>
+                            <p class="stat-value" id="reportItemsSold">٠</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">ناوەندی فرۆشتن</p>
+                            <p class="stat-value" id="reportAverage">٠ د.ع</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCloseReports">داخستن</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed-action-buttons">
+        <button class="fab fab-scan" id="fabScan" title="سکانی بەرهەم">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                <path d="M7 12h10"/>
+            </svg>
+            <span>سکان</span>
+        </button>
+        <button class="fab fab-new-sale" id="fabNewSale" title="فرۆشتنی نوێ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <span>فرۆشتنی نوێ</span>
+        </button>
+        <button class="fab fab-add-product" id="fabAddProduct" title="زیادکردنی بەرهەم">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <span>زیادکردنی بەرهەم</span>
+        </button>
+        <button class="fab fab-checkout" id="fabCheckout" title="تەواوکردنی خێرا">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            <span>تەواوکردن</span>
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="script.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+const kurdishNumerals = {
+    '0': '٠', '1': '١', '2': '٢', '3': '٣', '4': '٤',
+    '5': '٥', '6': '٦', '7': '٧', '8': '٨', '9': '٩',
+    '.': '.', ',': '،'
+};
+
+const kurdishMonths = [
+    'کانوونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
+    'تەمموز', 'ئاب', 'ئەیلول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانوونی یەکەم'
+];
+
+function toKurdishNumerals(num) {
+    return String(num).split('').map(char => kurdishNumerals[char] || char).join('');
+}
+
+function formatKurdishCurrency(amount) {
+    return toKurdishNumerals(amount.toLocaleString('en-US', { 
+        minimumFractionDigits: 0, 
+        maximumFractionDigits: 2 
+    })) + ' د.ع';
+}
+
+function formatKurdishDate(date) {
+    const day = toKurdishNumerals(date.getDate());
+    const month = kurdishMonths[date.getMonth()];
+    const year = toKurdishNumerals(date.getFullYear());
+    return `${day} ${month} ${year}`;
+}
+
+function formatKurdishTime(date) {
+    const hours = toKurdishNumerals(date.getHours().toString().padStart(2, '0'));
+    const minutes = toKurdishNumerals(date.getMinutes().toString().padStart(2, '0'));
+    return `${hours}:${minutes}`;
+}
+
+function updateDateTime() {
+    const now = new Date();
+    document.getElementById('currentTime').textContent = formatKurdishTime(now);
+    document.getElementById('currentDate').textContent = formatKurdishDate(now);
+}
+
+let products = JSON.parse(localStorage.getItem('products')) || [];
+let cart = [];
+let currentReceipt = null;
+let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
+let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+let printerConnected = false;
+let scannerConnected = false;
+let fabsVisible = JSON.parse(localStorage.getItem('fabsVisible') ?? 'true');
+let html5QrCode = null;
+let isCameraActive = false;
+let scanTargetInput = null;
+
+function saveProducts() {
+    localStorage.setItem('products', JSON.stringify(products));
+}
+
+function toggleFabs() {
+    fabsVisible = !fabsVisible;
+    localStorage.setItem('fabsVisible', JSON.stringify(fabsVisible));
+    
+    const fabs = document.querySelectorAll('.fab');
+    const toggleBtn = document.getElementById('btnToggleFabs');
+    
+    fabs.forEach(fab => {
+        fab.style.display = fabsVisible ? 'flex' : 'none';
+    });
+    
+    if (fabsVisible) {
+        toggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        toggleBtn.title = 'شاردنەوەی دوگمەکان';
+    } else {
+        toggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+        toggleBtn.title = 'پیشاندانی دوگمەکان';
+    }
+}
+
+function saveCategories() {
+    localStorage.setItem('customCategories', JSON.stringify(customCategories));
+}
+
+function saveHistory() {
+    localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+}
+
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+function getAllCategories() {
+    const defaultCategories = ['خواردەمەنی', 'خواردنەوە', 'پاکیژەیی', 'کەلووپەل'];
+    return [...defaultCategories, ...customCategories];
+}
+
+function renderCategories() {
+    const productCategories = new Set(products.map(p => p.category));
+    const categories = ['هەموو', ...productCategories];
+    const filterDiv = document.querySelector('.category-filter');
+    filterDiv.innerHTML = categories.map(cat => 
+        `<button class="category-btn ${cat === 'هەموو' ? 'active' : ''}" data-category="${cat}">${cat}</button>`
+    ).join('');
+    
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderProducts(btn.dataset.category);
+        });
+    });
+}
+
+function renderProducts(category = 'هەموو') {
+    const grid = document.getElementById('productsGrid');
+    const filtered = category === 'هەموو' ? products : products.filter(p => p.category === category);
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><p>هیچ بەرهەمێک نەدۆزرایەوە</p></div>';
+        return;
+    }
+    
+    grid.innerHTML = filtered.map(product => {
+        const isLowStock = product.quantity < 10;
+        const isOutOfStock = product.quantity === 0;
+        const badgeClass = isOutOfStock ? 'badge-destructive' : isLowStock ? 'badge-secondary' : 'badge-outline';
+        const stockText = isOutOfStock ? 'نەماوە' : `${toKurdishNumerals(product.quantity)} دانە`;
+        
+        return `
+            <div class="product-card ${isOutOfStock ? 'out-of-stock' : ''}" data-id="${product.id}" data-testid="card-product-${product.id}">
+                <div class="product-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name" data-testid="text-product-name-${product.id}">${product.name}</h3>
+                    <p class="product-price" data-testid="text-product-price-${product.id}">${formatKurdishCurrency(product.price)}</p>
+                </div>
+                <div class="product-badges">
+                    <span class="badge ${badgeClass}">${stockText}</span>
+                    <span class="badge badge-outline">${product.category}</span>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-edit" onclick="openEditProduct('${product.id}')" title="دەستکاری">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </button>
+                    <button class="btn-delete" onclick="deleteProduct('${product.id}')" title="سڕینەوە">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.querySelectorAll('.product-card:not(.out-of-stock)').forEach(card => {
+        card.addEventListener('click', () => {
+            const product = products.find(p => p.id === card.dataset.id);
+            addToCart(product);
+        });
+    });
+}
+
+function addToCart(product) {
+    const existingItem = cart.find(item => item.productId === product.id);
+    
+    if (existingItem) {
+        if (existingItem.quantity >= product.quantity) {
+            showToast('هەڵە', 'بڕی کافی نییە', 'error');
+            return;
+        }
+        existingItem.quantity++;
+        existingItem.lineTotal = existingItem.quantity * existingItem.price;
+    } else {
+        cart.push({
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: 1,
+            lineTotal: product.price
+        });
+    }
+    
+    playSound('add');
+    renderCart();
+}
+
+function renderCart() {
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const btnCheckout = document.getElementById('btnCheckout');
+    const btnClearCart = document.getElementById('btnClearCart');
+    
+    if (cart.length === 0) {
+        cartItems.innerHTML = `
+            <div class="cart-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.2;"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                <p class="cart-empty-text">سەبەتە بەتاڵە</p>
+                <p class="cart-empty-hint">بەرهەمێک هەڵبژێرە</p>
+            </div>
+        `;
+        cartTotal.textContent = '٠ د.ع';
+        btnCheckout.disabled = true;
+        btnClearCart.style.display = 'none';
+        return;
+    }
+    
+    const total = cart.reduce((sum, item) => sum + item.lineTotal, 0);
+    
+    cartItems.innerHTML = cart.map((item, index) => `
+        <div class="cart-item" data-testid="cart-item-${item.productId}">
+            <div class="cart-item-header">
+                <h3 class="cart-item-name" data-testid="text-cart-item-name-${item.productId}">${item.name}</h3>
+                <button class="btn-remove" onclick="removeFromCart(${index})" data-testid="button-remove-${item.productId}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
+            </div>
+            <div class="cart-item-details">
+                <span class="cart-item-price">${formatKurdishCurrency(item.price)}</span>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="updateQuantity(${index}, -1)" ${item.quantity <= 1 ? 'disabled' : ''} data-testid="button-decrease-${item.productId}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                    </button>
+                    <span class="quantity-value" data-testid="text-quantity-${item.productId}">${toKurdishNumerals(item.quantity)}</span>
+                    <button class="quantity-btn" onclick="updateQuantity(${index}, 1)" data-testid="button-increase-${item.productId}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    </button>
+                </div>
+                <span class="cart-item-total" data-testid="text-line-total-${item.productId}">${formatKurdishCurrency(item.lineTotal)}</span>
+            </div>
+        </div>
+    `).join('');
+    
+    cartTotal.textContent = formatKurdishCurrency(total);
+    btnCheckout.disabled = false;
+    btnClearCart.style.display = 'block';
+}
+
+function updateQuantity(index, delta) {
+    const item = cart[index];
+    const product = products.find(p => p.id === item.productId);
+    const newQuantity = item.quantity + delta;
+    
+    if (newQuantity > product.quantity) {
+        showToast('هەڵە', 'بڕی کافی نییە', 'error');
+        playSound('error');
+        return;
+    }
+    
+    if (newQuantity <= 0) return;
+    
+    item.quantity = newQuantity;
+    item.lineTotal = item.quantity * item.price;
+    renderCart();
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    renderCart();
+}
+
+function clearCart() {
+    cart = [];
+    renderCart();
+}
+
+function openProductDialog() {
+    const categorySelect = document.getElementById('productCategory');
+    categorySelect.innerHTML = getAllCategories().map(cat => 
+        `<option value="${cat}">${cat}</option>`
+    ).join('');
+    
+    document.getElementById('productDialog').style.display = 'flex';
+    document.getElementById('productForm').reset();
+    document.getElementById('productDialogTitle').textContent = 'زیادکردنی بەرهەمی نوێ';
+}
+
+function closeProductDialog() {
+    document.getElementById('productDialog').style.display = 'none';
+}
+
+function saveProduct(e) {
+    e.preventDefault();
+    
+    const barcode = document.getElementById('productBarcode').value.trim();
+    
+    const product = {
+        id: generateId(),
+        name: document.getElementById('productName').value,
+        barcode: barcode || undefined,
+        price: parseFloat(document.getElementById('productPrice').value),
+        quantity: parseInt(document.getElementById('productQuantity').value),
+        category: document.getElementById('productCategory').value
+    };
+    
+    products.push(product);
+    saveProducts();
+    closeProductDialog();
+    renderCategories();
+    renderProducts();
+    showToast('سەرکەوتوو', 'بەرهەم زیادکرا', 'success');
+}
+
+function openCheckoutDialog() {
+    if (cart.length === 0) return;
+    
+    const total = cart.reduce((sum, item) => sum + item.lineTotal, 0);
+    document.getElementById('checkoutTotal').textContent = formatKurdishCurrency(total);
+    document.getElementById('checkoutDialog').style.display = 'flex';
+}
+
+function closeCheckoutDialog() {
+    document.getElementById('checkoutDialog').style.display = 'none';
+}
+
+function confirmCheckout() {
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    const total = cart.reduce((sum, item) => sum + item.lineTotal, 0);
+    const now = new Date();
+    
+    currentReceipt = {
+        receiptNumber: generateId().substr(0, 8).toUpperCase(),
+        items: [...cart],
+        total: total,
+        paymentMethod: paymentMethod,
+        date: now
+    };
+    
+    salesHistory.push({
+        receiptNumber: currentReceipt.receiptNumber,
+        items: currentReceipt.items,
+        total: currentReceipt.total,
+        paymentMethod: currentReceipt.paymentMethod,
+        date: currentReceipt.date.toISOString()
+    });
+    saveHistory();
+    
+    cart.forEach(cartItem => {
+        const product = products.find(p => p.id === cartItem.productId);
+        if (product) {
+            product.quantity -= cartItem.quantity;
+        }
+    });
+    
+    saveProducts();
+    cart = [];
+    
+    closeCheckoutDialog();
+    renderCart();
+    renderProducts();
+    playSound('success');
+    showToast('سەرکەوتوو', 'فرۆشتن تەواو بوو', 'success');
+    
+    setTimeout(() => {
+        openReceiptDialog();
+    }, 300);
+}
+
+function openReceiptDialog() {
+    if (!currentReceipt) return;
+    
+    const receiptContent = document.getElementById('receiptContent');
+    receiptContent.innerHTML = `
+        <div class="receipt-header">
+            <h2 class="receipt-store-name">فرۆشگای کوردستان</h2>
+            <p class="receipt-subtitle">وەسڵی فرۆشتن</p>
+        </div>
+        
+        <div class="receipt-info">
+            <div class="receipt-info-item">
+                <span class="receipt-info-label">ژمارەی وەسڵ:</span>
+                <span>${toKurdishNumerals(currentReceipt.receiptNumber)}</span>
+            </div>
+            <div class="receipt-info-item">
+                <span class="receipt-info-label">بەروار:</span>
+                <span>${formatKurdishDate(currentReceipt.date)}</span>
+            </div>
+            <div class="receipt-info-item">
+                <span class="receipt-info-label">کات:</span>
+                <span>${formatKurdishTime(currentReceipt.date)}</span>
+            </div>
+            <div class="receipt-info-item">
+                <span class="receipt-info-label">شێوازی پارەدان:</span>
+                <span>${currentReceipt.paymentMethod}</span>
+            </div>
+        </div>
+        
+        <h3 class="receipt-items-title">بەرهەمەکان</h3>
+        
+        <div class="receipt-items">
+            ${currentReceipt.items.map((item, index) => `
+                <div class="receipt-item">
+                    <span class="receipt-item-name">${item.name}</span>
+                    <span class="receipt-item-qty">${toKurdishNumerals(item.quantity)}</span>
+                    <span class="receipt-item-price">${formatKurdishCurrency(item.price)}</span>
+                    <span class="receipt-item-total">${formatKurdishCurrency(item.lineTotal)}</span>
+                </div>
+            `).join('')}
+        </div>
+        
+        <div class="receipt-total-section">
+            <div class="receipt-total-row grand-total">
+                <span>کۆی گشتی:</span>
+                <span>${formatKurdishCurrency(currentReceipt.total)}</span>
+            </div>
+        </div>
+        
+        <div class="receipt-footer">
+            <p>سوپاس بۆ کڕینەکەت!</p>
+            <p>فرۆشگای کوردستان</p>
+        </div>
+    `;
+    
+    document.getElementById('receiptDialog').style.display = 'flex';
+}
+
+function closeReceiptDialog() {
+    document.getElementById('receiptDialog').style.display = 'none';
+}
+
+function printReceipt() {
+    window.print();
+}
+
+function downloadReceiptPDF() {
+    if (!currentReceipt || !window.jspdf) {
+        showToast('هەڵە', 'تکایە چاوەڕێ بکە', 'error');
+        return;
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFillColor(22, 163, 74);
+    doc.rect(0, 0, 210, 40, 'F');
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Froshgay Kurdistan', 105, 18, { align: 'center' });
+    
+    doc.setFontSize(16);
+    doc.text('Wasli Froshtin', 105, 30, { align: 'center' });
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    
+    const dateObj = currentReceipt.date;
+    const day = dateObj.getDate();
+    const month = dateObj.getMonth() + 1;
+    const year = dateObj.getFullYear();
+    const hours = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+    
+    doc.text(`Zhmara: ${currentReceipt.receiptNumber}`, 20, 52);
+    doc.text(`Beroar: ${day}/${month}/${year}`, 20, 60);
+    doc.text(`Kat: ${hours}:${minutes}`, 20, 68);
+    doc.text(`Shewazi Paredan: ${currentReceipt.paymentMethod}`, 20, 76);
+    
+    doc.setLineWidth(0.5);
+    doc.line(20, 83, 190, 83);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text('Berhemakan', 20, 93);
+    
+    doc.setFontSize(10);
+    doc.text('Zh.', 20, 103);
+    doc.text('Naw', 35, 103);
+    doc.text('Dana', 100, 103);
+    doc.text('Nirkh', 125, 103);
+    doc.text('Koy', 165, 103);
+    
+    doc.setLineWidth(0.3);
+    doc.line(20, 106, 190, 106);
+    
+    let yPos = 116;
+    doc.setFont('helvetica', 'normal');
+    currentReceipt.items.forEach((item, index) => {
+        if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+        }
+        
+        doc.text(String(index + 1), 20, yPos);
+        doc.text(item.name, 35, yPos);
+        doc.text(String(item.quantity), 100, yPos);
+        doc.text(item.price.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}), 125, yPos);
+        doc.text(item.lineTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}), 165, yPos);
+        yPos += 10;
+    });
+    
+    yPos += 5;
+    doc.setLineWidth(0.5);
+    doc.line(20, yPos, 190, yPos);
+    
+    yPos += 10;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('KOY GISHTI:', 20, yPos);
+    doc.text(currentReceipt.total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' d.3', 165, yPos);
+    
+    yPos += 15;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 100, 100);
+    doc.text('Sopas bo krrinekat!', 105, yPos, { align: 'center' });
+    doc.text('Froshgay Kurdistan', 105, yPos + 7, { align: 'center' });
+    
+    doc.save(`wasll-${currentReceipt.receiptNumber}.pdf`);
+    showToast('سەرکەوتوو', 'PDF داگیرا', 'success');
+}
+
+function newSale() {
+    cart = [];
+    renderCart();
+    showToast('', 'فرۆشتنی نوێ دەستی پێکرد', 'success');
+}
+
+function playSound(type) {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    if (type === 'add') {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        osc.frequency.setValueAtTime(1200, audioContext.currentTime);
+        gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
+        
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 0.08);
+    } else if (type === 'error') {
+        const osc1 = audioContext.createOscillator();
+        const osc2 = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        osc1.frequency.setValueAtTime(300, audioContext.currentTime);
+        osc2.frequency.setValueAtTime(250, audioContext.currentTime);
+        gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+        
+        osc1.start(audioContext.currentTime);
+        osc2.start(audioContext.currentTime);
+        osc1.stop(audioContext.currentTime + 0.15);
+        osc2.stop(audioContext.currentTime + 0.15);
+    } else if (type === 'success') {
+        const times = [0, 0.08, 0.16];
+        const freqs = [880, 1047, 1319];
+        
+        times.forEach((time, i) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            osc.frequency.setValueAtTime(freqs[i], audioContext.currentTime + time);
+            gain.gain.setValueAtTime(0.12, audioContext.currentTime + time);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + time + 0.1);
+            
+            osc.start(audioContext.currentTime + time);
+            osc.stop(audioContext.currentTime + time + 0.1);
+        });
+    }
+}
+
+function showToast(title, message, type) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'error' ? '#fee2e2' : type === 'success' ? '#dcfce7' : '#fff'};
+        border: 1px solid ${type === 'error' ? '#fca5a5' : type === 'success' ? '#86efac' : '#e5e5e5'};
+        color: ${type === 'error' ? '#991b1b' : type === 'success' ? '#166534' : '#1a1a1a'};
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        max-width: 300px;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    toast.innerHTML = `
+        ${title ? `<div style="font-weight: 700; margin-bottom: 0.25rem;">${title}</div>` : ''}
+        <div>${message}</div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function openSettingsDialog() {
+    checkDevices();
+    renderCategoriesList();
+    document.getElementById('settingsDialog').style.display = 'flex';
+}
+
+function closeSettingsDialog() {
+    document.getElementById('settingsDialog').style.display = 'none';
+}
+
+function checkDevices() {
+    setTimeout(() => {
+        if (navigator.usb) {
+            navigator.usb.getDevices().then(devices => {
+                printerConnected = devices.some(device => device.productName && device.productName.toLowerCase().includes('printer'));
+                scannerConnected = devices.some(device => device.productName && device.productName.toLowerCase().includes('scanner'));
+                updateDeviceStatus();
+            }).catch(() => {
+                updateDeviceStatus();
+            });
+        } else {
+            updateDeviceStatus();
+        }
+    }, 100);
+}
+
+function updateDeviceStatus() {
+    const printerStatus = document.getElementById('printerStatus');
+    const scannerStatus = document.getElementById('scannerStatus');
+    
+    if (printerConnected) {
+        printerStatus.textContent = 'بەستراوە';
+        printerStatus.className = 'status-badge status-connected';
+    } else {
+        printerStatus.textContent = 'بەستراو نییە';
+        printerStatus.className = 'status-badge status-disconnected';
+    }
+    
+    if (scannerConnected) {
+        scannerStatus.textContent = 'بەستراوە';
+        scannerStatus.className = 'status-badge status-connected';
+    } else {
+        scannerStatus.textContent = 'بەستراو نییە';
+        scannerStatus.className = 'status-badge status-disconnected';
+    }
+}
+
+function renderCategoriesList() {
+    const list = document.getElementById('categoriesList');
+    const allCategories = getAllCategories();
+    list.innerHTML = allCategories.map(cat => `
+        <div class="category-item">
+            <span class="category-name">${cat}</span>
+            ${customCategories.includes(cat) ? `
+                <button class="btn-delete-category" onclick="deleteCategory('${cat}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+function openCategoryDialog() {
+    document.getElementById('categoryDialog').style.display = 'flex';
+    document.getElementById('categoryForm').reset();
+}
+
+function closeCategoryDialog() {
+    document.getElementById('categoryDialog').style.display = 'none';
+}
+
+function saveCategory(e) {
+    e.preventDefault();
+    const categoryName = document.getElementById('categoryName').value.trim();
+    
+    if (getAllCategories().includes(categoryName)) {
+        showToast('هەڵە', 'ئەم جۆرە پێشتر هەیە', 'error');
+        return;
+    }
+    
+    customCategories.push(categoryName);
+    saveCategories();
+    closeCategoryDialog();
+    renderCategoriesList();
+    showToast('سەرکەوتوو', 'جۆر زیادکرا', 'success');
+}
+
+function deleteCategory(categoryName) {
+    if (products.some(p => p.category === categoryName)) {
+        showToast('هەڵە', 'ئەم جۆرە لە بەرهەمێکدا بەکاردێت', 'error');
+        return;
+    }
+    
+    customCategories = customCategories.filter(cat => cat !== categoryName);
+    saveCategories();
+    renderCategoriesList();
+    showToast('سەرکەوتوو', 'جۆر سڕایەوە', 'success');
+}
+
+function openEditProduct(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    document.getElementById('editProductId').value = product.id;
+    document.getElementById('editProductName').value = product.name;
+    document.getElementById('editProductBarcode').value = product.barcode || '';
+    document.getElementById('editProductPrice').value = product.price;
+    document.getElementById('editProductQuantity').value = product.quantity;
+    
+    const categorySelect = document.getElementById('editProductCategory');
+    categorySelect.innerHTML = getAllCategories().map(cat => 
+        `<option value="${cat}" ${cat === product.category ? 'selected' : ''}>${cat}</option>`
+    ).join('');
+    
+    document.getElementById('editProductDialog').style.display = 'flex';
+}
+
+function closeEditProductDialog() {
+    document.getElementById('editProductDialog').style.display = 'none';
+}
+
+function saveEditProduct(e) {
+    e.preventDefault();
+    
+    const productId = document.getElementById('editProductId').value;
+    const product = products.find(p => p.id === productId);
+    
+    if (!product) return;
+    
+    const barcode = document.getElementById('editProductBarcode').value.trim();
+    
+    product.name = document.getElementById('editProductName').value;
+    product.barcode = barcode || undefined;
+    product.price = parseFloat(document.getElementById('editProductPrice').value);
+    product.quantity = parseInt(document.getElementById('editProductQuantity').value);
+    product.category = document.getElementById('editProductCategory').value;
+    
+    saveProducts();
+    closeEditProductDialog();
+    renderCategories();
+    renderProducts();
+    showToast('سەرکەوتوو', 'بەرهەم نوێکرایەوە', 'success');
+}
+
+function deleteProduct(productId) {
+    if (!confirm('دڵنیایت لە سڕینەوەی ئەم بەرهەمە؟')) return;
+    
+    products = products.filter(p => p.id !== productId);
+    saveProducts();
+    renderCategories();
+    renderProducts();
+    showToast('سەرکەوتوو', 'بەرهەم سڕایەوە', 'success');
+}
+
+function openHistoryDialog() {
+    renderHistory();
+    document.getElementById('historyDialog').style.display = 'flex';
+}
+
+function closeHistoryDialog() {
+    document.getElementById('historyDialog').style.display = 'none';
+}
+
+function renderHistory() {
+    const historyContent = document.getElementById('historyContent');
+    
+    if (salesHistory.length === 0) {
+        historyContent.innerHTML = `
+            <div class="cart-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.2;"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+                <p class="cart-empty-text">مێژوو بەتاڵە</p>
+            </div>
+        `;
+        return;
+    }
+    
+    historyContent.innerHTML = salesHistory.slice().reverse().map(receipt => `
+        <div class="history-item" onclick="viewHistoryReceipt('${receipt.receiptNumber}')">
+            <div class="history-header">
+                <span class="history-receipt-number">#${toKurdishNumerals(receipt.receiptNumber)}</span>
+                <span class="history-date">${formatKurdishDate(new Date(receipt.date))}</span>
+            </div>
+            <div class="history-summary">
+                <span>${toKurdishNumerals(receipt.items.length)} بەرهەم</span>
+                <span class="history-total">${formatKurdishCurrency(receipt.total)}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function viewHistoryReceipt(receiptNumber) {
+    const receipt = salesHistory.find(r => r.receiptNumber === receiptNumber);
+    if (!receipt) return;
+    
+    currentReceipt = {
+        ...receipt,
+        date: new Date(receipt.date)
+    };
+    
+    closeHistoryDialog();
+    openReceiptDialog();
+}
+
+function clearHistory() {
+    if (!confirm('دڵنیایت لە سڕینەوەی هەموو مێژووەکە؟')) return;
+    
+    salesHistory = [];
+    saveHistory();
+    renderHistory();
+    showToast('سەرکەوتوو', 'مێژوو سڕایەوە', 'success');
+}
+
+function openScanDialog(targetInputId = null) {
+    scanTargetInput = targetInputId;
+    document.getElementById('scanDialog').style.display = 'flex';
+    document.getElementById('barcodeInput').value = '';
+    document.getElementById('scanResult').style.display = 'none';
+    
+    if (scanTargetInput) {
+        document.getElementById('scanInstruction').textContent = 'بارکۆد سکان بکە بۆ پڕکردنەوەی خانەکە';
+    } else {
+        document.getElementById('scanInstruction').textContent = 'بارکۆدەکە سکان بکە یان بنووسە';
+    }
+    
+    setTimeout(() => {
+        document.getElementById('barcodeInput').focus();
+    }, 100);
+}
+
+function closeScanDialog() {
+    if (isCameraActive) {
+        stopCamera();
+    }
+    scanTargetInput = null;
+    document.getElementById('scanDialog').style.display = 'none';
+}
+
+async function startCamera() {
+    try {
+        const cameraContainer = document.getElementById('cameraContainer');
+        const scanIcon = document.getElementById('scanIcon');
+        const scanInstruction = document.getElementById('scanInstruction');
+        const btnStartCamera = document.getElementById('btnStartCamera');
+        const btnStopCamera = document.getElementById('btnStopCamera');
+        
+        scanIcon.style.display = 'none';
+        scanInstruction.textContent = 'کامێرا بە باشی دابنێ بۆ سکان کردنی بارکۆد';
+        cameraContainer.style.display = 'block';
+        btnStartCamera.style.display = 'none';
+        btnStopCamera.style.display = 'inline-flex';
+        
+        if (!html5QrCode) {
+            html5QrCode = new Html5Qrcode("cameraContainer");
+        }
+        
+        const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 150 },
+            aspectRatio: 1.777778
+        };
+        
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            onScanSuccess,
+            onScanError
+        );
+        
+        isCameraActive = true;
+        showToast('', 'کامێرا کرایەوە', 'success');
+    } catch (err) {
+        console.error('Camera error:', err);
+        showToast('هەڵە', 'کامێرا نەکرایەوە. تکایە مۆڵەتەکان بدە', 'error');
+        resetCameraUI();
+    }
+}
+
+function stopCamera() {
+    if (html5QrCode && isCameraActive) {
+        html5QrCode.stop().then(() => {
+            resetCameraUI();
+            showToast('', 'کامێرا داخرا', 'success');
+        }).catch(err => {
+            console.error('Error stopping camera:', err);
+            resetCameraUI();
+        });
+    }
+}
+
+function resetCameraUI() {
+    const cameraContainer = document.getElementById('cameraContainer');
+    const scanIcon = document.getElementById('scanIcon');
+    const scanInstruction = document.getElementById('scanInstruction');
+    const btnStartCamera = document.getElementById('btnStartCamera');
+    const btnStopCamera = document.getElementById('btnStopCamera');
+    
+    cameraContainer.style.display = 'none';
+    scanIcon.style.display = 'flex';
+    scanInstruction.textContent = 'بارکۆدەکە سکان بکە یان بنووسە';
+    btnStartCamera.style.display = 'inline-flex';
+    btnStopCamera.style.display = 'none';
+    isCameraActive = false;
+}
+
+function onScanSuccess(decodedText, decodedResult) {
+    playSound('add');
+    document.getElementById('barcodeInput').value = decodedText;
+    const resultDiv = document.getElementById('scanResult');
+    
+    if (scanTargetInput) {
+        const targetField = document.getElementById(scanTargetInput);
+        if (targetField) {
+            targetField.value = decodedText;
+            playSound('success');
+            
+            if (isCameraActive) {
+                stopCamera();
+            }
+            closeScanDialog();
+            showToast('سەرکەوتوو', `✓ بارکۆد سکان کرا: ${decodedText}`, 'success');
+        }
+        return;
+    }
+    
+    const product = products.find(p => p.barcode === decodedText || p.name.toLowerCase().includes(decodedText.toLowerCase()));
+    
+    if (product) {
+        if (product.quantity === 0) {
+            resultDiv.className = 'scan-result error';
+            resultDiv.textContent = `${product.name} - نەماوە`;
+            resultDiv.style.display = 'block';
+            playSound('error');
+        } else {
+            addToCart(product);
+            resultDiv.className = 'scan-result success';
+            resultDiv.textContent = `✓ ${product.name} - زیادکرا بۆ سەبەتە`;
+            resultDiv.style.display = 'block';
+            playSound('success');
+            
+            setTimeout(() => {
+                resultDiv.style.display = 'none';
+                document.getElementById('barcodeInput').value = '';
+            }, 2000);
+        }
+    } else {
+        resultDiv.className = 'scan-result error';
+        resultDiv.textContent = `بارکۆد: ${decodedText} - بەرهەم نەدۆزرایەوە`;
+        resultDiv.style.display = 'block';
+        playSound('error');
+        
+        setTimeout(() => {
+            resultDiv.style.display = 'none';
+            document.getElementById('barcodeInput').value = '';
+        }, 3000);
+    }
+}
+
+function onScanError(errorMessage) {
+}
+
+function handleBarcodeScan(e) {
+    e.preventDefault();
+    const barcode = document.getElementById('barcodeInput').value.trim();
+    const resultDiv = document.getElementById('scanResult');
+    
+    if (!barcode) {
+        return;
+    }
+    
+    const product = products.find(p => p.barcode === barcode || p.name.toLowerCase().includes(barcode.toLowerCase()));
+    
+    if (product) {
+        if (product.quantity === 0) {
+            resultDiv.className = 'scan-result error';
+            resultDiv.textContent = `${product.name} - نەماوە`;
+            resultDiv.style.display = 'block';
+            playSound('error');
+        } else {
+            addToCart(product);
+            resultDiv.className = 'scan-result success';
+            resultDiv.textContent = `✓ ${product.name} - زیادکرا بۆ سەبەتە`;
+            resultDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                document.getElementById('barcodeInput').value = '';
+                resultDiv.style.display = 'none';
+                document.getElementById('barcodeInput').focus();
+            }, 1000);
+        }
+    } else {
+        resultDiv.className = 'scan-result error';
+        resultDiv.textContent = 'بەرهەم نەدۆزرایەوە';
+        resultDiv.style.display = 'block';
+        playSound('error');
+        
+        setTimeout(() => {
+            document.getElementById('barcodeInput').value = '';
+            resultDiv.style.display = 'none';
+            document.getElementById('barcodeInput').focus();
+        }, 1500);
+    }
+}
+
+function openReportsDialog() {
+    document.getElementById('reportsDialog').style.display = 'flex';
+    loadReports('daily');
+}
+
+function closeReportsDialog() {
+    document.getElementById('reportsDialog').style.display = 'none';
+}
+
+function loadReports(period) {
+    const now = new Date();
+    let filteredSales = [];
+    
+    if (period === 'daily') {
+        filteredSales = salesHistory.filter(sale => {
+            const saleDate = new Date(sale.date);
+            return saleDate.toDateString() === now.toDateString();
+        });
+    } else if (period === 'weekly') {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        filteredSales = salesHistory.filter(sale => {
+            const saleDate = new Date(sale.date);
+            return saleDate >= weekAgo;
+        });
+    } else if (period === 'monthly') {
+        filteredSales = salesHistory.filter(sale => {
+            const saleDate = new Date(sale.date);
+            return saleDate.getMonth() === now.getMonth() && saleDate.getFullYear() === now.getFullYear();
+        });
+    } else if (period === 'yearly') {
+        filteredSales = salesHistory.filter(sale => {
+            const saleDate = new Date(sale.date);
+            return saleDate.getFullYear() === now.getFullYear();
+        });
+    }
+    
+    const totalSales = filteredSales.reduce((sum, sale) => sum + sale.total, 0);
+    const transactions = filteredSales.length;
+    const itemsSold = filteredSales.reduce((sum, sale) => {
+        return sum + sale.items.reduce((itemSum, item) => itemSum + item.quantity, 0);
+    }, 0);
+    const average = transactions > 0 ? totalSales / transactions : 0;
+    
+    document.getElementById('reportTotalSales').textContent = formatKurdishCurrency(totalSales);
+    document.getElementById('reportTransactions').textContent = toKurdishNumerals(transactions);
+    document.getElementById('reportItemsSold').textContent = toKurdishNumerals(itemsSold);
+    document.getElementById('reportAverage').textContent = formatKurdishCurrency(average);
+    
+    document.querySelectorAll('.report-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.period === period);
+    });
+}
+
+document.getElementById('btnAddProduct').addEventListener('click', openProductDialog);
+document.getElementById('btnCancelProduct').addEventListener('click', closeProductDialog);
+document.getElementById('productForm').addEventListener('submit', saveProduct);
+
+document.getElementById('btnCheckout').addEventListener('click', openCheckoutDialog);
+document.getElementById('btnCancelCheckout').addEventListener('click', closeCheckoutDialog);
+document.getElementById('btnConfirmCheckout').addEventListener('click', confirmCheckout);
+
+document.getElementById('btnCloseReceipt').addEventListener('click', closeReceiptDialog);
+document.getElementById('btnPrintReceipt').addEventListener('click', printReceipt);
+document.getElementById('btnDownloadReceipt').addEventListener('click', downloadReceiptPDF);
+
+document.getElementById('btnClearCart').addEventListener('click', clearCart);
+document.getElementById('btnNewSale').addEventListener('click', newSale);
+
+document.getElementById('fabScan').addEventListener('click', openScanDialog);
+document.getElementById('fabNewSale').addEventListener('click', newSale);
+document.getElementById('fabAddProduct').addEventListener('click', openProductDialog);
+document.getElementById('fabCheckout').addEventListener('click', openCheckoutDialog);
+
+document.getElementById('btnCloseScan').addEventListener('click', closeScanDialog);
+document.getElementById('scanForm').addEventListener('submit', handleBarcodeScan);
+document.getElementById('btnStartCamera').addEventListener('click', startCamera);
+document.getElementById('btnStopCamera').addEventListener('click', stopCamera);
+
+document.getElementById('btnScanProductBarcode').addEventListener('click', () => {
+    openScanDialog('productBarcode');
+});
+document.getElementById('btnScanEditProductBarcode').addEventListener('click', () => {
+    openScanDialog('editProductBarcode');
+});
+
+document.getElementById('btnSettings').addEventListener('click', openSettingsDialog);
+document.getElementById('btnCloseSettings').addEventListener('click', closeSettingsDialog);
+
+document.getElementById('btnAddCategory').addEventListener('click', openCategoryDialog);
+document.getElementById('btnCancelCategory').addEventListener('click', closeCategoryDialog);
+document.getElementById('categoryForm').addEventListener('submit', saveCategory);
+
+document.getElementById('btnCancelEditProduct').addEventListener('click', closeEditProductDialog);
+document.getElementById('editProductForm').addEventListener('submit', saveEditProduct);
+
+document.getElementById('btnHistory').addEventListener('click', openHistoryDialog);
+document.getElementById('btnCloseHistory').addEventListener('click', closeHistoryDialog);
+document.getElementById('btnClearHistory').addEventListener('click', clearHistory);
+
+document.getElementById('btnReports').addEventListener('click', openReportsDialog);
+document.getElementById('btnCloseReports').addEventListener('click', closeReportsDialog);
+document.querySelectorAll('.report-tab').forEach(tab => {
+    tab.addEventListener('click', () => loadReports(tab.dataset.period));
+});
+
+document.getElementById('btnToggleFabs').addEventListener('click', toggleFabs);
+
+document.querySelectorAll('.dialog-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            overlay.style.display = 'none';
+        }
+    });
+});
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+updateDateTime();
+setInterval(updateDateTime, 1000);
+renderCategories();
+renderProducts();
+renderCart();
+
+const fabs = document.querySelectorAll('.fab');
+fabs.forEach(fab => {
+    fab.style.display = fabsVisible ? 'flex' : 'none';
+});
+if (!fabsVisible) {
+    const toggleBtn = document.getElementById('btnToggleFabs');
+    toggleBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+    toggleBtn.title = 'پیشاندانی دوگمەکان';
+}
+
+if (products.length === 0) {
+    const sampleProducts = [
+        { id: generateId(), name: 'نان', price: 500, quantity: 50, category: 'خواردەمەنی' },
+        { id: generateId(), name: 'شیر', price: 1000, quantity: 30, category: 'خواردنەوە' },
+        { id: generateId(), name: 'کرێم', price: 2000, quantity: 15, category: 'پاکیژەیی' },
+        { id: generateId(), name: 'قالێچە', price: 50000, quantity: 5, category: 'کەلووپەل' }
+    ];
+    
+    products = sampleProducts;
+    saveProducts();
+    renderCategories();
+    renderProducts();
+}
+
+console.log('سیستەمی کاشێری کوردی - ئامادەیە');
+    </script>
+</body>
+</html>
