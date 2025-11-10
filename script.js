@@ -492,30 +492,54 @@ function newSale() {
 
 function playSound(type) {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
     
     if (type === 'add') {
-        oscillator.frequency.value = 800;
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.1);
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        osc.frequency.setValueAtTime(1200, audioContext.currentTime);
+        gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
+        
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 0.08);
     } else if (type === 'error') {
-        oscillator.frequency.value = 200;
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.2);
+        const osc1 = audioContext.createOscillator();
+        const osc2 = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        osc1.frequency.setValueAtTime(300, audioContext.currentTime);
+        osc2.frequency.setValueAtTime(250, audioContext.currentTime);
+        gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+        
+        osc1.start(audioContext.currentTime);
+        osc2.start(audioContext.currentTime);
+        osc1.stop(audioContext.currentTime + 0.15);
+        osc2.stop(audioContext.currentTime + 0.15);
     } else if (type === 'success') {
-        oscillator.frequency.value = 1000;
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
+        const times = [0, 0.08, 0.16];
+        const freqs = [880, 1047, 1319];
+        
+        times.forEach((time, i) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            osc.frequency.setValueAtTime(freqs[i], audioContext.currentTime + time);
+            gain.gain.setValueAtTime(0.12, audioContext.currentTime + time);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + time + 0.1);
+            
+            osc.start(audioContext.currentTime + time);
+            osc.stop(audioContext.currentTime + time + 0.1);
+        });
     }
 }
 
@@ -817,6 +841,59 @@ function handleBarcodeScan(e) {
     }
 }
 
+function openReportsDialog() {
+    document.getElementById('reportsDialog').style.display = 'flex';
+    loadReports('daily');
+}
+
+function closeReportsDialog() {
+    document.getElementById('reportsDialog').style.display = 'none';
+}
+
+function loadReports(period) {
+    const now = new Date();
+    let filteredSales = [];
+    
+    if (period === 'daily') {
+        filteredSales = salesHistory.filter(sale => {
+            const saleDate = new Date(sale.date);
+            return saleDate.toDateString() === now.toDateString();
+        });
+    } else if (period === 'weekly') {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        filteredSales = salesHistory.filter(sale => {
+            const saleDate = new Date(sale.date);
+            return saleDate >= weekAgo;
+        });
+    } else if (period === 'monthly') {
+        filteredSales = salesHistory.filter(sale => {
+            const saleDate = new Date(sale.date);
+            return saleDate.getMonth() === now.getMonth() && saleDate.getFullYear() === now.getFullYear();
+        });
+    } else if (period === 'yearly') {
+        filteredSales = salesHistory.filter(sale => {
+            const saleDate = new Date(sale.date);
+            return saleDate.getFullYear() === now.getFullYear();
+        });
+    }
+    
+    const totalSales = filteredSales.reduce((sum, sale) => sum + sale.total, 0);
+    const transactions = filteredSales.length;
+    const itemsSold = filteredSales.reduce((sum, sale) => {
+        return sum + sale.items.reduce((itemSum, item) => itemSum + item.quantity, 0);
+    }, 0);
+    const average = transactions > 0 ? totalSales / transactions : 0;
+    
+    document.getElementById('reportTotalSales').textContent = formatKurdishCurrency(totalSales);
+    document.getElementById('reportTransactions').textContent = toKurdishNumerals(transactions);
+    document.getElementById('reportItemsSold').textContent = toKurdishNumerals(itemsSold);
+    document.getElementById('reportAverage').textContent = formatKurdishCurrency(average);
+    
+    document.querySelectorAll('.report-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.period === period);
+    });
+}
+
 document.getElementById('btnAddProduct').addEventListener('click', openProductDialog);
 document.getElementById('btnCancelProduct').addEventListener('click', closeProductDialog);
 document.getElementById('productForm').addEventListener('submit', saveProduct);
@@ -853,6 +930,12 @@ document.getElementById('editProductForm').addEventListener('submit', saveEditPr
 document.getElementById('btnHistory').addEventListener('click', openHistoryDialog);
 document.getElementById('btnCloseHistory').addEventListener('click', closeHistoryDialog);
 document.getElementById('btnClearHistory').addEventListener('click', clearHistory);
+
+document.getElementById('btnReports').addEventListener('click', openReportsDialog);
+document.getElementById('btnCloseReports').addEventListener('click', closeReportsDialog);
+document.querySelectorAll('.report-tab').forEach(tab => {
+    tab.addEventListener('click', () => loadReports(tab.dataset.period));
+});
 
 document.querySelectorAll('.dialog-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {

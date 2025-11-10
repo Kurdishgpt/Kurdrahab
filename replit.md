@@ -28,6 +28,11 @@ A Kurdish-language Point of Sale (POS) system for retail stores. This is a stati
 - Stock tracking and low-stock warnings
 
 ## Recent Changes
+- Added Sales Reports button and improved POS sounds - November 10, 2025
+  * Green highlighted Reports button in top-left corner
+  * Sales reports dialog with Daily/Weekly/Monthly/Yearly tabs
+  * Statistics: Total Sales, Transactions, Items Sold, Average Sale
+  * Improved POS sounds: Quick beep (add), Error buzz (error), 3-note chime (success)
 - Added scan button with barcode scanning functionality - November 10, 2025
   * Purple scan button in fixed action buttons
   * Barcode field added to product forms (add & edit)

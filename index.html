@@ -14,6 +14,9 @@
     <div class="app-container">
         <header class="top-bar">
             <div class="top-bar-left">
+                <button class="icon-btn highlighted" id="btnReports" title="ڕاپۆرتی فرۆشتن" data-testid="button-reports">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+                </button>
                 <button class="icon-btn" id="btnNewSale" title="فرۆشتنی نوێ" data-testid="button-new-sale">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                 </button>
@@ -316,6 +319,63 @@
             </div>
             <div class="dialog-footer">
                 <button type="button" class="btn-outline" id="btnCloseScan">داخستن</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportsDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content dialog-large">
+            <div class="dialog-header">
+                <h3 class="dialog-title">ڕاپۆرتی فرۆشتن</h3>
+            </div>
+            <div class="reports-tabs">
+                <button class="report-tab active" data-period="daily">ڕۆژانە</button>
+                <button class="report-tab" data-period="weekly">هەفتانە</button>
+                <button class="report-tab" data-period="monthly">مانگانە</button>
+                <button class="report-tab" data-period="yearly">ساڵانە</button>
+            </div>
+            <div class="reports-content" id="reportsContent">
+                <div class="report-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">کۆی فرۆشتن</p>
+                            <p class="stat-value" id="reportTotalSales">٠ د.ع</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">ژمارەی مامەڵەکان</p>
+                            <p class="stat-value" id="reportTransactions">٠</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">کۆی بەرهەمەکان</p>
+                            <p class="stat-value" id="reportItemsSold">٠</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">ناوەندی فرۆشتن</p>
+                            <p class="stat-value" id="reportAverage">٠ د.ع</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCloseReports">داخستن</button>
             </div>
         </div>
     </div>
