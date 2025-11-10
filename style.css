@@ -1048,4 +1048,100 @@ body {
         top: 0;
         width: 100%;
     }
+    
+    .fixed-action-buttons {
+        display: none;
+    }
+}
+
+.fixed-action-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+}
+
+.fab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.fab:active {
+    transform: translateY(0);
+}
+
+.fab svg {
+    flex-shrink: 0;
+}
+
+.fab-new-sale {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.fab-new-sale:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.fab-add-product {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
+
+.fab-add-product:hover {
+    background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+}
+
+.fab-checkout {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.fab-checkout:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+@media (max-width: 768px) {
+    .fixed-action-buttons {
+        bottom: 10px;
+        gap: 8px;
+        padding: 6px 12px;
+    }
+    
+    .fab {
+        padding: 10px 16px;
+        font-size: 0.875rem;
+    }
+    
+    .fab span {
+        display: none;
+    }
+    
+    .fab {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+    }
 }

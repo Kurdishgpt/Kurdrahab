@@ -761,6 +761,10 @@ document.getElementById('btnDownloadReceipt').addEventListener('click', download
 document.getElementById('btnClearCart').addEventListener('click', clearCart);
 document.getElementById('btnNewSale').addEventListener('click', newSale);
 
+document.getElementById('fabNewSale').addEventListener('click', newSale);
+document.getElementById('fabAddProduct').addEventListener('click', openProductDialog);
+document.getElementById('fabCheckout').addEventListener('click', openCheckoutDialog);
+
 document.getElementById('btnSettings').addEventListener('click', openSettingsDialog);
 document.getElementById('btnCloseSettings').addEventListener('click', closeSettingsDialog);
 
