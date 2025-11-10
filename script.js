@@ -47,6 +47,8 @@ let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
 let printerConnected = false;
 let scannerConnected = false;
 let fabsVisible = JSON.parse(localStorage.getItem('fabsVisible') ?? 'true');
+let html5QrCode = null;
+let isCameraActive = false;
 
 function saveProducts() {
     localStorage.setItem('products', JSON.stringify(products));
@@ -816,7 +818,118 @@ function openScanDialog() {
 }
 
 function closeScanDialog() {
+    if (isCameraActive) {
+        stopCamera();
+    }
     document.getElementById('scanDialog').style.display = 'none';
+}
+
+async function startCamera() {
+    try {
+        const cameraContainer = document.getElementById('cameraContainer');
+        const scanIcon = document.getElementById('scanIcon');
+        const scanInstruction = document.getElementById('scanInstruction');
+        const btnStartCamera = document.getElementById('btnStartCamera');
+        const btnStopCamera = document.getElementById('btnStopCamera');
+        
+        scanIcon.style.display = 'none';
+        scanInstruction.textContent = 'کامێرا بە باشی دابنێ بۆ سکان کردنی بارکۆد';
+        cameraContainer.style.display = 'block';
+        btnStartCamera.style.display = 'none';
+        btnStopCamera.style.display = 'inline-flex';
+        
+        if (!html5QrCode) {
+            html5QrCode = new Html5Qrcode("cameraContainer");
+        }
+        
+        const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 150 },
+            aspectRatio: 1.777778
+        };
+        
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            onScanSuccess,
+            onScanError
+        );
+        
+        isCameraActive = true;
+        showToast('', 'کامێرا کرایەوە', 'success');
+    } catch (err) {
+        console.error('Camera error:', err);
+        showToast('هەڵە', 'کامێرا نەکرایەوە. تکایە مۆڵەتەکان بدە', 'error');
+        resetCameraUI();
+    }
+}
+
+function stopCamera() {
+    if (html5QrCode && isCameraActive) {
+        html5QrCode.stop().then(() => {
+            resetCameraUI();
+            showToast('', 'کامێرا داخرا', 'success');
+        }).catch(err => {
+            console.error('Error stopping camera:', err);
+            resetCameraUI();
+        });
+    }
+}
+
+function resetCameraUI() {
+    const cameraContainer = document.getElementById('cameraContainer');
+    const scanIcon = document.getElementById('scanIcon');
+    const scanInstruction = document.getElementById('scanInstruction');
+    const btnStartCamera = document.getElementById('btnStartCamera');
+    const btnStopCamera = document.getElementById('btnStopCamera');
+    
+    cameraContainer.style.display = 'none';
+    scanIcon.style.display = 'flex';
+    scanInstruction.textContent = 'بارکۆدەکە سکان بکە یان بنووسە';
+    btnStartCamera.style.display = 'inline-flex';
+    btnStopCamera.style.display = 'none';
+    isCameraActive = false;
+}
+
+function onScanSuccess(decodedText, decodedResult) {
+    playSound('add');
+    document.getElementById('barcodeInput').value = decodedText;
+    
+    const product = products.find(p => p.barcode === decodedText || p.name.toLowerCase().includes(decodedText.toLowerCase()));
+    const resultDiv = document.getElementById('scanResult');
+    
+    if (product) {
+        if (product.quantity === 0) {
+            resultDiv.className = 'scan-result error';
+            resultDiv.textContent = `${product.name} - نەماوە`;
+            resultDiv.style.display = 'block';
+            playSound('error');
+        } else {
+            addToCart(product);
+            resultDiv.className = 'scan-result success';
+            resultDiv.textContent = `✓ ${product.name} - زیادکرا بۆ سەبەتە`;
+            resultDiv.style.display = 'block';
+            playSound('success');
+            
+            setTimeout(() => {
+                resultDiv.style.display = 'none';
+                document.getElementById('barcodeInput').value = '';
+            }, 2000);
+        }
+    } else {
+        resultDiv.className = 'scan-result error';
+        resultDiv.textContent = `بارکۆد: ${decodedText} - بەرهەم نەدۆزرایەوە`;
+        resultDiv.style.display = 'block';
+        playSound('error');
+        
+        setTimeout(() => {
+            resultDiv.style.display = 'none';
+            document.getElementById('barcodeInput').value = '';
+        }, 3000);
+    }
+}
+
+function onScanError(errorMessage) {
 }
 
 function handleBarcodeScan(e) {
@@ -937,6 +1050,8 @@ document.getElementById('fabCheckout').addEventListener('click', openCheckoutDia
 
 document.getElementById('btnCloseScan').addEventListener('click', closeScanDialog);
 document.getElementById('scanForm').addEventListener('submit', handleBarcodeScan);
+document.getElementById('btnStartCamera').addEventListener('click', startCamera);
+document.getElementById('btnStopCamera').addEventListener('click', stopCamera);
 
 document.getElementById('btnSettings').addEventListener('click', openSettingsDialog);
 document.getElementById('btnCloseSettings').addEventListener('click', closeSettingsDialog);

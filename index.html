@@ -303,7 +303,13 @@
                 <h3 class="dialog-title">سکان کردنی بەرهەم</h3>
             </div>
             <div class="scan-content">
-                <div class="scan-icon">
+                <div class="camera-container" id="cameraContainer" style="display: none;">
+                    <video id="scannerVideo" playsinline autoplay></video>
+                    <div class="scanner-frame">
+                        <div class="scanner-line"></div>
+                    </div>
+                </div>
+                <div class="scan-icon" id="scanIcon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
                         <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
@@ -312,7 +318,17 @@
                         <path d="M7 12h10"/>
                     </svg>
                 </div>
-                <p class="scan-instruction">بارکۆدەکە سکان بکە یان بنووسە</p>
+                <p class="scan-instruction" id="scanInstruction">بارکۆدەکە سکان بکە یان بنووسە</p>
+                <div class="scan-actions">
+                    <button type="button" class="btn-primary" id="btnStartCamera">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m23 7-7 5 7 5V7z"/><rect width="15" height="14" x="1" y="5" rx="2" ry="2"/></svg>
+                        کردنەوەی کامێرا
+                    </button>
+                    <button type="button" class="btn-outline" id="btnStopCamera" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/></svg>
+                        وەستاندنی کامێرا
+                    </button>
+                </div>
                 <form id="scanForm">
                     <div class="form-group">
                         <input type="text" id="barcodeInput" class="barcode-input" placeholder="بارکۆد بنووسە یان سکان بکە" autofocus data-testid="input-barcode">
@@ -409,6 +425,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
