@@ -49,6 +49,7 @@ let scannerConnected = false;
 let fabsVisible = JSON.parse(localStorage.getItem('fabsVisible') ?? 'true');
 let html5QrCode = null;
 let isCameraActive = false;
+let scanTargetInput = null;
 
 function saveProducts() {
     localStorage.setItem('products', JSON.stringify(products));
@@ -808,10 +809,18 @@ function clearHistory() {
     showToast('سەرکەوتوو', 'مێژوو سڕایەوە', 'success');
 }
 
-function openScanDialog() {
+function openScanDialog(targetInputId = null) {
+    scanTargetInput = targetInputId;
     document.getElementById('scanDialog').style.display = 'flex';
     document.getElementById('barcodeInput').value = '';
     document.getElementById('scanResult').style.display = 'none';
+    
+    if (scanTargetInput) {
+        document.getElementById('scanInstruction').textContent = 'بارکۆد سکان بکە بۆ پڕکردنەوەی خانەکە';
+    } else {
+        document.getElementById('scanInstruction').textContent = 'بارکۆدەکە سکان بکە یان بنووسە';
+    }
+    
     setTimeout(() => {
         document.getElementById('barcodeInput').focus();
     }, 100);
@@ -821,6 +830,7 @@ function closeScanDialog() {
     if (isCameraActive) {
         stopCamera();
     }
+    scanTargetInput = null;
     document.getElementById('scanDialog').style.display = 'none';
 }
 
@@ -894,9 +904,28 @@ function resetCameraUI() {
 function onScanSuccess(decodedText, decodedResult) {
     playSound('add');
     document.getElementById('barcodeInput').value = decodedText;
+    const resultDiv = document.getElementById('scanResult');
+    
+    if (scanTargetInput) {
+        const targetField = document.getElementById(scanTargetInput);
+        if (targetField) {
+            targetField.value = decodedText;
+            resultDiv.className = 'scan-result success';
+            resultDiv.textContent = `✓ بارکۆد سکان کرا: ${decodedText}`;
+            resultDiv.style.display = 'block';
+            playSound('success');
+            
+            setTimeout(() => {
+                if (isCameraActive) {
+                    stopCamera();
+                }
+                closeScanDialog();
+            }, 1500);
+        }
+        return;
+    }
     
     const product = products.find(p => p.barcode === decodedText || p.name.toLowerCase().includes(decodedText.toLowerCase()));
-    const resultDiv = document.getElementById('scanResult');
     
     if (product) {
         if (product.quantity === 0) {
@@ -1052,6 +1081,13 @@ document.getElementById('btnCloseScan').addEventListener('click', closeScanDialo
 document.getElementById('scanForm').addEventListener('submit', handleBarcodeScan);
 document.getElementById('btnStartCamera').addEventListener('click', startCamera);
 document.getElementById('btnStopCamera').addEventListener('click', stopCamera);
+
+document.getElementById('btnScanProductBarcode').addEventListener('click', () => {
+    openScanDialog('productBarcode');
+});
+document.getElementById('btnScanEditProductBarcode').addEventListener('click', () => {
+    openScanDialog('editProductBarcode');
+});
 
 document.getElementById('btnSettings').addEventListener('click', openSettingsDialog);
 document.getElementById('btnCloseSettings').addEventListener('click', closeSettingsDialog);
