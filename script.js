@@ -910,17 +910,13 @@ function onScanSuccess(decodedText, decodedResult) {
         const targetField = document.getElementById(scanTargetInput);
         if (targetField) {
             targetField.value = decodedText;
-            resultDiv.className = 'scan-result success';
-            resultDiv.textContent = `✓ بارکۆد سکان کرا: ${decodedText}`;
-            resultDiv.style.display = 'block';
             playSound('success');
             
-            setTimeout(() => {
-                if (isCameraActive) {
-                    stopCamera();
-                }
-                closeScanDialog();
-            }, 1500);
+            if (isCameraActive) {
+                stopCamera();
+            }
+            closeScanDialog();
+            showToast('سەرکەوتوو', `✓ بارکۆد سکان کرا: ${decodedText}`, 'success');
         }
         return;
     }
