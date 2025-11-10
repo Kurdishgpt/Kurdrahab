@@ -406,32 +406,40 @@ function downloadReceiptPDF() {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(24);
     doc.setTextColor(255, 255, 255);
-    doc.text('KURDISTAN SHOP', 105, 18, { align: 'center' });
+    doc.text('Froshgay Kurdistan', 105, 18, { align: 'center' });
     
     doc.setFontSize(16);
-    doc.text('Sales Receipt / Wasll', 105, 30, { align: 'center' });
+    doc.text('Wasli Froshtin', 105, 30, { align: 'center' });
     
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Receipt Number: ${currentReceipt.receiptNumber}`, 20, 52);
-    doc.text(`Date: ${formatKurdishDate(currentReceipt.date)}`, 20, 60);
-    doc.text(`Time: ${formatKurdishTime(currentReceipt.date)}`, 20, 68);
-    doc.text(`Payment: ${currentReceipt.paymentMethod}`, 20, 76);
+    
+    const dateObj = currentReceipt.date;
+    const day = dateObj.getDate();
+    const month = dateObj.getMonth() + 1;
+    const year = dateObj.getFullYear();
+    const hours = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+    
+    doc.text(`Zhmara: ${currentReceipt.receiptNumber}`, 20, 52);
+    doc.text(`Beroar: ${day}/${month}/${year}`, 20, 60);
+    doc.text(`Kat: ${hours}:${minutes}`, 20, 68);
+    doc.text(`Shewazi Paredan: ${currentReceipt.paymentMethod}`, 20, 76);
     
     doc.setLineWidth(0.5);
     doc.line(20, 83, 190, 83);
     
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
-    doc.text('ITEMS', 20, 93);
+    doc.text('Berhemakan', 20, 93);
     
     doc.setFontSize(10);
-    doc.text('No.', 20, 103);
-    doc.text('Item Name', 35, 103);
-    doc.text('Qty', 100, 103);
-    doc.text('Price', 125, 103);
-    doc.text('Total', 165, 103);
+    doc.text('Zh.', 20, 103);
+    doc.text('Naw', 35, 103);
+    doc.text('Dana', 100, 103);
+    doc.text('Nirkh', 125, 103);
+    doc.text('Koy', 165, 103);
     
     doc.setLineWidth(0.3);
     doc.line(20, 106, 190, 106);
@@ -447,8 +455,8 @@ function downloadReceiptPDF() {
         doc.text(String(index + 1), 20, yPos);
         doc.text(item.name, 35, yPos);
         doc.text(String(item.quantity), 100, yPos);
-        doc.text(item.price.toFixed(2), 125, yPos);
-        doc.text(item.lineTotal.toFixed(2), 165, yPos);
+        doc.text(item.price.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}), 125, yPos);
+        doc.text(item.lineTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}), 165, yPos);
         yPos += 10;
     });
     
@@ -459,17 +467,17 @@ function downloadReceiptPDF() {
     yPos += 10;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
-    doc.text('GRAND TOTAL:', 20, yPos);
-    doc.text(currentReceipt.total.toFixed(2) + ' IQD', 165, yPos);
+    doc.text('KOY GISHTI:', 20, yPos);
+    doc.text(currentReceipt.total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' d.3', 165, yPos);
     
     yPos += 15;
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100, 100, 100);
-    doc.text('Thank you for your purchase!', 105, yPos, { align: 'center' });
-    doc.text('Kurdistan Shop', 105, yPos + 7, { align: 'center' });
+    doc.text('Sopas bo krrinekat!', 105, yPos, { align: 'center' });
+    doc.text('Froshgay Kurdistan', 105, yPos + 7, { align: 'center' });
     
-    doc.save(`receipt-${currentReceipt.receiptNumber}.pdf`);
+    doc.save(`wasll-${currentReceipt.receiptNumber}.pdf`);
     showToast('سەرکەوتوو', 'PDF داگیرا', 'success');
 }
 

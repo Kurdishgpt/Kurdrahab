@@ -28,4 +28,7 @@ A Kurdish-language Point of Sale (POS) system for retail stores. This is a stati
 - Stock tracking and low-stock warnings
 
 ## Recent Changes
+- Added fixed action buttons at the bottom (New Sale, Add Product, Quick Checkout) - November 10, 2025
+- Fixed PDF receipt to display all text in Kurdish Central (Sorani) using Latin script - November 10, 2025
+- Installed Python 3.11 for the development server - November 10, 2025
 - Initial import and Replit setup (November 9, 2025)
