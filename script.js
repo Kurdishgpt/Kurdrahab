@@ -254,9 +254,12 @@ function closeProductDialog() {
 function saveProduct(e) {
     e.preventDefault();
     
+    const barcode = document.getElementById('productBarcode').value.trim();
+    
     const product = {
         id: generateId(),
         name: document.getElementById('productName').value,
+        barcode: barcode || undefined,
         price: parseFloat(document.getElementById('productPrice').value),
         quantity: parseInt(document.getElementById('productQuantity').value),
         category: document.getElementById('productCategory').value
@@ -651,6 +654,7 @@ function openEditProduct(productId) {
     
     document.getElementById('editProductId').value = product.id;
     document.getElementById('editProductName').value = product.name;
+    document.getElementById('editProductBarcode').value = product.barcode || '';
     document.getElementById('editProductPrice').value = product.price;
     document.getElementById('editProductQuantity').value = product.quantity;
     
@@ -674,7 +678,10 @@ function saveEditProduct(e) {
     
     if (!product) return;
     
+    const barcode = document.getElementById('editProductBarcode').value.trim();
+    
     product.name = document.getElementById('editProductName').value;
+    product.barcode = barcode || undefined;
     product.price = parseFloat(document.getElementById('editProductPrice').value);
     product.quantity = parseInt(document.getElementById('editProductQuantity').value);
     product.category = document.getElementById('editProductCategory').value;
@@ -754,6 +761,62 @@ function clearHistory() {
     showToast('سەرکەوتوو', 'مێژوو سڕایەوە', 'success');
 }
 
+function openScanDialog() {
+    document.getElementById('scanDialog').style.display = 'flex';
+    document.getElementById('barcodeInput').value = '';
+    document.getElementById('scanResult').style.display = 'none';
+    setTimeout(() => {
+        document.getElementById('barcodeInput').focus();
+    }, 100);
+}
+
+function closeScanDialog() {
+    document.getElementById('scanDialog').style.display = 'none';
+}
+
+function handleBarcodeScan(e) {
+    e.preventDefault();
+    const barcode = document.getElementById('barcodeInput').value.trim();
+    const resultDiv = document.getElementById('scanResult');
+    
+    if (!barcode) {
+        return;
+    }
+    
+    const product = products.find(p => p.barcode === barcode || p.name.toLowerCase().includes(barcode.toLowerCase()));
+    
+    if (product) {
+        if (product.quantity === 0) {
+            resultDiv.className = 'scan-result error';
+            resultDiv.textContent = `${product.name} - نەماوە`;
+            resultDiv.style.display = 'block';
+            playSound('error');
+        } else {
+            addToCart(product);
+            resultDiv.className = 'scan-result success';
+            resultDiv.textContent = `✓ ${product.name} - زیادکرا بۆ سەبەتە`;
+            resultDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                document.getElementById('barcodeInput').value = '';
+                resultDiv.style.display = 'none';
+                document.getElementById('barcodeInput').focus();
+            }, 1000);
+        }
+    } else {
+        resultDiv.className = 'scan-result error';
+        resultDiv.textContent = 'بەرهەم نەدۆزرایەوە';
+        resultDiv.style.display = 'block';
+        playSound('error');
+        
+        setTimeout(() => {
+            document.getElementById('barcodeInput').value = '';
+            resultDiv.style.display = 'none';
+            document.getElementById('barcodeInput').focus();
+        }, 1500);
+    }
+}
+
 document.getElementById('btnAddProduct').addEventListener('click', openProductDialog);
 document.getElementById('btnCancelProduct').addEventListener('click', closeProductDialog);
 document.getElementById('productForm').addEventListener('submit', saveProduct);
@@ -769,9 +832,13 @@ document.getElementById('btnDownloadReceipt').addEventListener('click', download
 document.getElementById('btnClearCart').addEventListener('click', clearCart);
 document.getElementById('btnNewSale').addEventListener('click', newSale);
 
+document.getElementById('fabScan').addEventListener('click', openScanDialog);
 document.getElementById('fabNewSale').addEventListener('click', newSale);
 document.getElementById('fabAddProduct').addEventListener('click', openProductDialog);
 document.getElementById('fabCheckout').addEventListener('click', openCheckoutDialog);
+
+document.getElementById('btnCloseScan').addEventListener('click', closeScanDialog);
+document.getElementById('scanForm').addEventListener('submit', handleBarcodeScan);
 
 document.getElementById('btnSettings').addEventListener('click', openSettingsDialog);
 document.getElementById('btnCloseSettings').addEventListener('click', closeSettingsDialog);

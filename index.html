@@ -94,6 +94,10 @@
                     <input type="text" id="productName" placeholder="ناوی بەرهەم بنووسە" required data-testid="input-product-name">
                 </div>
                 <div class="form-group">
+                    <label for="productBarcode">بارکۆد (دڵخواز)</label>
+                    <input type="text" id="productBarcode" placeholder="بارکۆد بنووسە" data-testid="input-product-barcode">
+                </div>
+                <div class="form-group">
                     <label for="productPrice">نرخ (دینار)</label>
                     <input type="number" id="productPrice" step="0.01" placeholder="٠" required data-testid="input-product-price">
                 </div>
@@ -245,6 +249,10 @@
                     <input type="text" id="editProductName" required>
                 </div>
                 <div class="form-group">
+                    <label for="editProductBarcode">بارکۆد (دڵخواز)</label>
+                    <input type="text" id="editProductBarcode" placeholder="بارکۆد بنووسە">
+                </div>
+                <div class="form-group">
                     <label for="editProductPrice">نرخ (دینار)</label>
                     <input type="number" id="editProductPrice" step="0.01" required>
                 </div>
@@ -283,7 +291,46 @@
         </div>
     </div>
 
+    <div id="scanDialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3 class="dialog-title">سکان کردنی بەرهەم</h3>
+            </div>
+            <div class="scan-content">
+                <div class="scan-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                        <path d="M7 12h10"/>
+                    </svg>
+                </div>
+                <p class="scan-instruction">بارکۆدەکە سکان بکە یان بنووسە</p>
+                <form id="scanForm">
+                    <div class="form-group">
+                        <input type="text" id="barcodeInput" class="barcode-input" placeholder="بارکۆد بنووسە یان سکان بکە" autofocus data-testid="input-barcode">
+                    </div>
+                    <div class="scan-result" id="scanResult" style="display: none;"></div>
+                </form>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn-outline" id="btnCloseScan">داخستن</button>
+            </div>
+        </div>
+    </div>
+
     <div class="fixed-action-buttons">
+        <button class="fab fab-scan" id="fabScan" title="سکانی بەرهەم">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                <path d="M7 12h10"/>
+            </svg>
+            <span>سکان</span>
+        </button>
         <button class="fab fab-new-sale" id="fabNewSale" title="فرۆشتنی نوێ">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             <span>فرۆشتنی نوێ</span>
